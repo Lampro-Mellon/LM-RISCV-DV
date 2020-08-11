@@ -1,3 +1,4 @@
-/cores
-/google_riscv_dv
-/integrated_cores
+/cores/**
+/google_riscv_dv/**
+/integrated_cores/**
+

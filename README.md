@@ -77,4 +77,4 @@ It will set up the environment for the core (SweRV for now).
 
 ## Contribution
 
-This is a work in progress. We'd to accept your contributions to this project. 
+This is a work in progress. We'd like to accept your contributions to this project. 
