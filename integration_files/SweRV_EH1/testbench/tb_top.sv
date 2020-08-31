@@ -359,8 +359,10 @@ module tb_top;
         jtag_id[31:28] = 4'b1;
         jtag_id[27:12] = '0;
         jtag_id[11:1]  = 11'h45;
-        reset_vector = 32'h0;
-        nmi_vector   = 32'hee000000;
+				//(Najeeb: change reset vector to 'h8000_0000)
+        reset_vector = 32'h8000_0000;
+				//(Najeeb: change nmi_vector to as given in common_defines.vh)
+        nmi_vector   = 32'h11110000;
         nmi_int   = 0;
 
         $readmemh("data.hex",     lmem.mem);

@@ -4,8 +4,30 @@
   iterations: 1
   rtl_test: core_base_test_benchmark
 
+- test: cmark_iccm
+  c_tests: directed_tests/c/cmark_iccm.c
+  gcc_opts: -g -O3 -funroll-all-loops
+  iterations: 1
+  rtl_test: core_base_test_benchmark
+
+- test: c_sample
+  c_tests: directed_tests/c/c_sample.c
+  gcc_opts: -g -O3 -funroll-all-loops
+  iterations: 1
+  rtl_test: core_base_test_benchmark
+
 - test: hello_world
   asm_tests: directed_tests/asm/hello_world.s
+  iterations: 1
+  rtl_test: core_base_test_benchmark
+
+- test: hello_world_dccm
+  asm_tests: directed_tests/asm/hello_world_dccm.s
+  iterations: 1
+  rtl_test: core_base_test_benchmark
+
+- test: riscv_arithmetic_basic_test_0
+  asm_tests: directed_tests/asm/riscv_sample_test/riscv_arithmetic_basic_test_0.S
   iterations: 1
   rtl_test: core_base_test_benchmark
 

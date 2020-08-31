@@ -302,6 +302,18 @@ def cp_compiled_test(test, bin_dir, idx):
 		binary 		= os.path.join(bin_dir, '{}_{}.bin'.format(test_name, idx))
 		program_hex = os.path.join(bin_dir, 'program_{}_{}.hex'.format(test_name, idx))
 		data_hex 	= os.path.join(bin_dir, 'data_{}_{}.hex'.format(test_name, idx))
+
+	# Modifying program.hex and data.hex starting address
+	# location to fit smaller testbench memory
+	update ='@0000'
+	with open(program_hex,'r+') as f:
+		f.seek(0)
+		f.write(update)
+  
+	update ='@0000'
+	with open(data_hex,'r+') as f:
+		f.seek(0)
+		f.write(update)
     
 	# Delete compiled tests if present in current working directory    
 	rm_cmd 	= "rm -f program.hex program.bin data.hex"
@@ -425,7 +437,8 @@ def compare_test_run(test, idx, iss, output_dir, report):
 
     rtl_dir = os.path.join(output_dir, 'rtl_sim',
                            '{}.{}'.format(test_name, idx))
-
+		#TODO function to copy trace_port.csv and exec.log in output_dir
+		#TODO get core log and csv in appropriate formatting for matching
     rtl_log = os.path.join(rtl_dir, 'trace_core_00000000.log')
     rtl_csv = os.path.join(rtl_dir, 'trace_core_00000000.csv')
     uvm_log = os.path.join(rtl_dir, 'sim.log')

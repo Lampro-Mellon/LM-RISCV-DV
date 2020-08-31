@@ -455,6 +455,7 @@ def run_assembly(asm_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   	cmd += (" -mabi=%s" % mabi)
   	run_cmd_output(cmd.split(), debug_cmd = debug_cmd)    
   elif asm_test.endswith(".s"):
+  #TODO (Najeeb do linked elf gen for spike)
     cmd = ("%s/bin/riscv64-unknown-elf-cpp -I%s %s > %s" % (get_env_var("RISCV_TOOLCHAIN", debug_cmd = debug_cmd), gcc_user_extension_path, asm_test, cpp_s))
     os.system(cmd)
     cmd = ("%s/bin/riscv64-unknown-elf-as -march=%s %s -o %s" % (get_env_var("RISCV_TOOLCHAIN", debug_cmd = debug_cmd), isa, cpp_s, elf))
@@ -482,6 +483,7 @@ def run_assembly(asm_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   os.system(cmd)
     
   # TODO (Haroon): Setup spike simulation for directed asm tests
+  
   '''
   log_list = []
   # ISS simulation
@@ -495,8 +497,8 @@ def run_assembly(asm_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
     run_cmd(cmd, 10, debug_cmd = debug_cmd)
     logging.info("[%0s] Running ISS simulation: %s ...done" % (iss, elf))
   if len(iss_list) == 2:
-    compare_iss_log(iss_list, log_list, report)
-  '''
+    compare_iss_log(iss_list, log_list, report)'''
+  
 
 
 def run_assembly_from_dir(asm_test_dir, iss_yaml, isa, mabi, gcc_opts, iss,
@@ -526,9 +528,9 @@ def run_assembly_from_dir(asm_test_dir, iss_yaml, isa, mabi, gcc_opts, iss,
       run_assembly(asm_file, iss_yaml, isa, mabi, gcc_opts, iss, output_dir,
                    gcc_user_extension_path, linker_path, setting_dir, debug_cmd)
       # TODO (Haroon): Enable it after setting up spike simulation for directed asm tests
-      '''if "," in iss:
-        report = ("%s/iss_regr.log" % output_dir).rstrip()
-        save_regr_report(report)'''
+      # if "," in iss:
+      #   report = ("%s/iss_regr.log" % output_dir).rstrip()
+      #   save_regr_report(report)
   else:
     logging.error("No assembly test(*.S or *.s) found under %s" % asm_test_dir)
 
@@ -573,8 +575,9 @@ def run_c(c_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
 
   # gcc compilation
   #logging.info("Generating elf")
-  cmd = ("%s -I%s -nostdlib -nostartfiles %s -march=%s -mabi=%s -c %s -o %s " % \
-         (get_env_var("RISCV_GCC", debug_cmd = debug_cmd), gcc_user_extension_path, gcc_opts, isa, mabi, c_test, elf))
+  #TODO(Najeeb do linked elf generation)
+  cmd = ("%s -I%s -T%s -nostdlib -nostartfiles %s -march=%s -mabi=%s %s -o %s " % \
+         (get_env_var("RISCV_GCC", debug_cmd = debug_cmd), gcc_user_extension_path, linker_path, gcc_opts, isa, mabi, c_test, elf))
   run_cmd_output(cmd.split(), debug_cmd = debug_cmd)
   
   # Generating Binary
@@ -598,6 +601,7 @@ def run_c(c_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   os.system(cmd)
   
   # TODO (Haroon): Setup spike simulation for directed c tests
+  
   '''
   log_list = []
   # ISS simulation
@@ -612,7 +616,7 @@ def run_c(c_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
     logging.info("[%0s] Running ISS simulation: %s ...done" % (iss, elf))
   if len(iss_list) == 2:
     compare_iss_log(iss_list, log_list, report)'''
-
+  
 
 def run_c_from_dir(c_test_dir, iss_yaml, isa, mabi, gcc_opts, iss,
                    output_dir, gcc_user_extension_path, linker_path, setting_dir, debug_cmd):
@@ -640,9 +644,9 @@ def run_c_from_dir(c_test_dir, iss_yaml, isa, mabi, gcc_opts, iss,
       run_c(c_file, iss_yaml, isa, mabi, gcc_opts, iss, output_dir,
             setting_dir, debug_cmd)
       # TODO (Haroon): Enable it after setting up spike simulation for directed c tests
-      '''if "," in iss:
+      if "," in iss:
         report = ("%s/iss_regr.log" % output_dir).rstrip()
-        save_regr_report(report)'''
+        save_regr_report(report)
   else:
     logging.error("No c test(*.c) found under %s" % c_test_dir)
 
@@ -672,7 +676,14 @@ def iss_sim(test_list, output_dir, iss_list, iss_yaml, iss_opts,
         continue
       else:
         for i in range(0, test['iterations']):
-          prefix = ("%s/asm_tests/%s_%d" % (output_dir, test['test'], i))
+          if "asm_tests" in test.keys():
+            prefix = ("%s/directed_asm_tests/%s" % (output_dir, test['test']))
+          elif "c_tests" in test.keys():
+            prefix = ("%s/directed_c_tests/%s" % (output_dir, test['test']))
+          else:
+            prefix = ("%s/asm_tests/%s_%d" % (output_dir, test['test'], i) )
+
+          # prefix = ("%s/asm_tests/%s_%d" % (output_dir, test['test'], i))
           elf = prefix + ".o"
           log = ("%s/%s.%d.log" % (log_dir, test['test'], i))
           cmd = get_iss_cmd(base_cmd, elf, log)
@@ -1029,6 +1040,7 @@ def main():
     run_cmd_output(["mkdir", "-p", ("%s/asm_tests" % output_dir)])
     # Process regression test list
     matched_list = []
+    all_matched_list = []
     # Any tests in the YAML test list that specify a directed assembly test
     asm_directed_list = []
     # Any tests in the YAML test list that specify a directed c test
@@ -1036,6 +1048,7 @@ def main():
 
     if not args.co:
       process_regression_list(args.testlist, args.test, args.iterations, matched_list, cwd)
+      all_matched_list = matched_list.copy()
       for t in list(matched_list):
         # Check mutual exclusive between gen_test, asm_tests, and c_tests
         if 'asm_tests' in t:
@@ -1112,7 +1125,7 @@ def main():
 
       # Run ISS simulation
       if args.steps == "all" or re.match(".*iss_sim.*", args.steps):
-        iss_sim(matched_list, output_dir, args.iss, args.iss_yaml, args.iss_opts,
+        iss_sim(all_matched_list, output_dir, args.iss, args.iss_yaml, args.iss_opts,
                 args.isa, args.core_setting_dir, args.iss_timeout, args.debug)
 
       # Compare ISS simulation result

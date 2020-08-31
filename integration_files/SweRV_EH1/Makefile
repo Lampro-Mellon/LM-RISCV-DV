@@ -60,7 +60,13 @@ SIGNATURE_ADDR      :=
 # Linker File Path: if LINK is 1 then use user provided Linker File 
 # else use linker file from google's riscv-dv (scripts/link.ld)
 LINK				:= 1
-LINK_FILE			:= riscv_dv_extension/link.ld
+# provide specific link file
+ifeq (,$(wildcard riscv_dv_extension/$(TEST).ld))
+	# path to custom linker file
+	LINK_FILE	= riscv_dv_extension/link.ld 
+else
+	LINK_FILE = riscv_dv_extension/$(TEST).ld
+endif
 # User Extension Directory for GCC Compilation
 GCC_USER_EXT_PATH	:= $(realpath snapshots/default)
 
@@ -77,13 +83,22 @@ all: sim
 
 instr: iss_sim
 
-sim: post_compare cov
+sim: compile gen gcc_compile rtl_sim iss_sim post_compare 
+#cov
 
 .PHONY: clean
 clean:
 	rm -rf verdiLog/
 	rm -rf urgReport/
-	rm ucli.key novas* program.hex program.bin data.hex *.log trace_port.csv
+	rm -rf ucli.key novas* program.hex program.bin data.hex *.log trace_port.csv
+	#rm -rf out/
+
+deep_clean:
+	rm -rf verdiLog/
+	rm -rf urgReport/
+	rm -rf ucli.key novas* program.hex program.bin
+	rm -rf data.hex *.log *.fsdb trace_port.csv
+	rm -rf ${OUT} 
 
 # Common options for all targets
 COMMON_OPTS := $(if $(call equal,$(VERBOSE),1),--verbose,)
@@ -251,6 +266,32 @@ $(metadata)/instr_gen.compile.stamp: \
 
 .PHONY: gcc_compile
 gcc_compile: $(metadata)/instr_gen.compile.stamp
+
+###############################################################################
+# Run the instruction set simulator
+#
+# This (obviously) depends on having compiled the generated programs, so we
+# don't have to worry about variables that affect the 'gen' stage. However, the
+# ISS and ISS_OPTS variables do affect the output, so we need to dump them. See
+# the 'gen' stage for more verbose explanations of how this works.
+iss-var-deps := ISS ISS_OPTS
+-include $(metadata)/iss-vars.mk
+iss-vars-prereq = $(call vars-prereq,iss,running ISS,$(iss-var-deps))
+
+$(metadata)/instr_gen.iss.stamp: \
+  $(iss-vars-prereq) $(TESTLIST) $(metadata)/instr_gen.compile.stamp
+	$(verb)python3 ${GEN_DIR}/lm_run.py \
+     --o=$(OUT-SEED)/instr_gen ${GEN_OPTS} \
+     --steps=iss_sim \
+     ${TEST_OPTS} \
+     --iss="${ISS}" \
+     --iss_opts="${ISS_OPTS}" \
+     ${RISCV_DV_OPTS}
+	$(call dump-vars,$(metadata)/iss-vars.mk,iss,$(iss-var-deps))
+	@touch $@
+
+.PHONY: iss_sim
+iss_sim: $(metadata)/instr_gen.iss.stamp
 
 ###############################################################################
 # Compile Core TB

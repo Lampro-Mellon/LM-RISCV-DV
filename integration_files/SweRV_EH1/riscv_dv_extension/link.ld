@@ -4,9 +4,9 @@ ENTRY(_start)
 
 SECTIONS
 {
-    . = 0;
+  . = 0x80000000;
   .text   : { *(.text*) }
  _end = .;
-  . = 0x10000;
+  . = 0x80010000;
   .data  :  ALIGN(0x800) { *(.*data) *(.rodata*) STACK = ALIGN(16) + 0x8000; }
 }
