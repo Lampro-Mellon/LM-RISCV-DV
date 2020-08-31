@@ -11,6 +11,7 @@
 # swerv_local         = ../cores/SweRV_EH1
 
 # Delete the folders containing sources
+# Testing Push
 rm -rf ../cores/* ../google_riscv_dv/* ../google_riscv_dv/.* ../integrated_cores/*
 
 # Clone Google's RISC-V DV and check out to specified commit
