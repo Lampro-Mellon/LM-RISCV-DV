@@ -6,6 +6,7 @@ LM RISCV-DV is a verfication environment based on the verification environment f
 - Random Assembly Test Generation
 - Test Compilation (Random, Directed)
 - RTL Simulation
+- ISS Simulation
 - URG Coverage Report Generation
 
 ## Directory Structure

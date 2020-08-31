@@ -138,6 +138,7 @@ All of the DV flow is controlled and run using this makefile. It contains variab
 - gen
 - gcc_compile
 - rtl_sim
+- iss_sim
 - cov_urg
 
 You need to complete this makefile for running the DV Flow.

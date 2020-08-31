@@ -30,6 +30,5 @@ cp -r ../integration_files/SweRV_EH1 ../integrated_cores/SweRV_EH1;
 cp ../integration_files/sim.py ../integrated_cores/SweRV_EH1/;
 
 cp -r ../cores/SweRV_EH1/design ../integrated_cores/SweRV_EH1/rtl/;
-cp ../cores/SweRV_EH1/testbench/ahb_sif.sv ../integrated_cores/SweRV_EH1/testbench/;
 
 cp ../integration_files/lm_run.py ../google_riscv_dv/;
