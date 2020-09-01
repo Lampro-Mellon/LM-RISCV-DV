@@ -21,6 +21,7 @@ import os
 import random
 import subprocess
 import sys
+import fileinput
 
 _CORE = os.path.normpath(os.path.join(os.path.dirname(__file__)))
 _RISCV_DV_ROOT = os.path.join(_CORE, '../../google_riscv_dv')
@@ -303,18 +304,7 @@ def cp_compiled_test(test, bin_dir, idx):
 		program_hex = os.path.join(bin_dir, 'program_{}_{}.hex'.format(test_name, idx))
 		data_hex 	= os.path.join(bin_dir, 'data_{}_{}.hex'.format(test_name, idx))
 
-	# Modifying program.hex and data.hex starting address
-	# location to fit smaller testbench memory
-	update ='@0000'
-	with open(program_hex,'r+') as f:
-		f.seek(0)
-		f.write(update)
   
-	update ='@0000'
-	with open(data_hex,'r+') as f:
-		f.seek(0)
-		f.write(update)
-    
 	# Delete compiled tests if present in current working directory    
 	rm_cmd 	= "rm -f program.hex program.bin data.hex"
 	os.system(rm_cmd)
@@ -326,6 +316,8 @@ def cp_compiled_test(test, bin_dir, idx):
 	os.system(cp_program_hex_cmd)
 	cp_data_hex_cmd 	= "cp %s %s/data.hex" % (data_hex, _CORE)
 	os.system(cp_data_hex_cmd)
+
+
 
 
 def run_sim_commands(command_list, test, bin_dir, use_lsf):
@@ -411,6 +403,8 @@ def rtl_sim(sim_cmd, test_list, seed_gen, opts,
             cmd_list.append(get_test_sim_cmd(it_cmd, test, i,
                                              output_dir, bin_dir, lsf_cmd))'''
     # run_sim_commands(cmd_list, lsf_cmd is not None)
+
+
 
 
 def compare_test_run(test, idx, iss, output_dir, report):

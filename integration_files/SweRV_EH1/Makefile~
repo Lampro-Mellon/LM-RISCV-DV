@@ -45,7 +45,7 @@ ISA                 := rv32imc
 TEST                := hello_world
 TESTLIST            := riscv_dv_extension/testlist.yaml
 # Verbose logging
-VERBOSE             := 1
+VERBOSE             :=
 # Number of iterations for each test, assign a non-zero value to override the
 # iteration count in the test list
 ITERATIONS          := 0
@@ -59,14 +59,8 @@ CSR_FILE            :=
 SIGNATURE_ADDR      := 
 # Linker File Path: if LINK is 1 then use user provided Linker File 
 # else use linker file from google's riscv-dv (scripts/link.ld)
-LINK				:= 1
-# provide specific link file
-ifeq (,$(wildcard riscv_dv_extension/$(TEST).ld))
-	# path to custom linker file
-	LINK_FILE	= riscv_dv_extension/link.ld 
-else
-	LINK_FILE = riscv_dv_extension/$(TEST).ld
-endif
+LINK				:= 0
+LINK_FILE			:= riscv_dv_extension/link.ld
 # User Extension Directory for GCC Compilation
 GCC_USER_EXT_PATH	:= $(realpath snapshots/default)
 
@@ -83,22 +77,14 @@ all: sim
 
 instr: iss_sim
 
-sim: compile gen gcc_compile rtl_sim iss_sim post_compare 
-#cov
+sim: compile gen gcc_compile rtl_sim 
+# post_compare cov
 
 .PHONY: clean
 clean:
 	rm -rf verdiLog/
 	rm -rf urgReport/
-	rm -rf ucli.key novas* program.hex program.bin data.hex *.log trace_port.csv
-	#rm -rf out/
-
-deep_clean:
-	rm -rf verdiLog/
-	rm -rf urgReport/
-	rm -rf ucli.key novas* program.hex program.bin
-	rm -rf data.hex *.log *.fsdb trace_port.csv
-	rm -rf ${OUT} 
+	rm ucli.key novas* program.hex program.bin data.hex *.log trace_port.csv
 
 # Common options for all targets
 COMMON_OPTS := $(if $(call equal,$(VERBOSE),1),--verbose,)
@@ -372,7 +358,7 @@ iss-vars-prereq = $(call vars-prereq,iss,running ISS,$(iss-var-deps))
 
 $(metadata)/instr_gen.iss.stamp: \
   $(iss-vars-prereq) $(TESTLIST) $(metadata)/instr_gen.compile.stamp
-	$(verb)python3 ${GEN_DIR}/lm_run.py \
+	$(verb)python3 ${GEN_DIR}/run.py \
      --o=$(OUT-SEED)/instr_gen ${GEN_OPTS} \
      --steps=iss_sim \
      ${TEST_OPTS} \

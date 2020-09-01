@@ -10,3 +10,4 @@ SECTIONS
   . = 0x80010000;
   .data  :  ALIGN(0x800) { *(.*data) *(.rodata*) STACK = ALIGN(16) + 0x8000; }
 }
+

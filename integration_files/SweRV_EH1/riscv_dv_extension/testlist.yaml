@@ -46,3 +46,14 @@
   iterations: 2
   gen_test: riscv_instr_base_test
   rtl_test: core_base_test
+
+- test: riscv_load_store_instr_dccm_test
+  description: >
+    Random instruction stress test
+  iterations: 1
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=1000
+    +num_of_sub_program=0
+    +directed_instr_0=riscv_load_store_rand_instr_stream,4
+  rtl_test: core_base_test
