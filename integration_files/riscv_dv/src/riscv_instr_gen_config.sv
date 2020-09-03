@@ -116,8 +116,8 @@ class riscv_instr_gen_config extends uvm_object;
   //-----------------------------------------------------------------------------
 	//TODO add iccm region later!
   mem_region_t mem_region[$] = '{
-    '{name:"dccm_r", size_in_bytes: 1024*32, xwr: 3'b111},
-    '{name:"region_2", size_in_bytes: 32*4, xwr: 3'b111}
+    '{name:"region_0", size_in_bytes: 1024*32, xwr: 3'b111},
+    '{name:"region_1", size_in_bytes: 1024*16, xwr: 3'b111}
   };
 
   // Dedicated shared memory region for multi-harts atomic operations

@@ -65,7 +65,7 @@ ifeq (,$(wildcard riscv_dv_extension/$(TEST).ld))
 	# path to custom linker file
 	LINK_FILE	= riscv_dv_extension/link.ld 
 else
-	LINK_FILE = riscv_dv_extension/$(TEST).ld
+	LINK_FILE = riscv_dv_extension/linker_scripts/$(TEST).ld
 endif
 # User Extension Directory for GCC Compilation
 GCC_USER_EXT_PATH	:= $(realpath snapshots/default)
