@@ -108,23 +108,3 @@
     +directed_instr_0=riscv_load_store_rand_instr_stream,8
   rtl_test: core_base_test
 
-  # Please enable this test for your RTL simulation
-- test: riscv_csr_test
-  description: >
-    Test all CSR instructions on all implemented CSR registers
-  iterations: 1
-  no_iss: 1
-  rtl_test: core_csr_test
-  no_post_compare: 1
-
-- test: riscv_full_interrupt_test
-  description: >
-    Random instruction test with complete interrupt handling
-  iterations: 1
-  gen_test: riscv_rand_instr_test
-  gen_opts: >
-    +enable_interrupt=1
-    +gen_exceptions=1
-  rtl_test: core_base_test
-  sim_opts: >
-    +enable_irq_seq=1
