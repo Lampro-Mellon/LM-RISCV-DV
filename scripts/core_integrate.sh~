@@ -32,9 +32,7 @@ cp ../integration_files/sim.py ../integrated_cores/SweRV_EH1/;
 
 cp -r ../cores/SweRV_EH1/design ../integrated_cores/SweRV_EH1/rtl/;
 
-rm ../cores/SweRV_EH1/riscv_dv_extension/riscv_core_setting.sv
 cp ../integration_files/SweRV_EH1/riscv_dv_extension/riscv_core_setting.sv ../integrated_cores/SweRV_EH1/riscv_dv_extension/
-rm ../cores/SweRV_EH1/riscv_dv_extension/riscv_core_setting.sv/testlist.yaml
 cp ../integration_files/SweRV_EH1/riscv_dv_extension/testlist.yaml ../integrated_cores/SweRV_EH1/riscv_dv_extension/
 
 cp ../integration_files/lm_run.py ../google_riscv_dv/;
