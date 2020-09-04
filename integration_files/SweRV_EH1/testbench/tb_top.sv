@@ -302,12 +302,12 @@ module tb_top;
 
     always @(negedge core_clk) begin
         cycleCnt <= cycleCnt+1;
-    	if (trace_rv_i_valid_ip !== 0) begin
+    	/*if (trace_rv_i_valid_ip !== 0) begin
 			if (trace_rv_i_insn_ip[31:0] == 32'h0000_0073 || trace_rv_i_insn_ip[63:32] == 32'h0000_0073) begin
 				$display ("Finishing the test on ecall",cycleCnt);
 				$finish;
 			end
-		end
+		end*/
 // Test timeout monitor
         if(cycleCnt == MAX_CYCLES) begin
             $display ("Hit max cycle count (%0d) .. stopping",cycleCnt);
@@ -359,10 +359,8 @@ module tb_top;
         jtag_id[31:28] = 4'b1;
         jtag_id[27:12] = '0;
         jtag_id[11:1]  = 11'h45;
-				//(Najeeb: change reset vector to 'h8000_0000)
-        reset_vector = 32'h8000_0000;
-				//(Najeeb: change nmi_vector to as given in common_defines.vh)
-        nmi_vector   = 32'h11110000;
+        reset_vector = 32'h0;
+        nmi_vector   = 32'hee000000;
         nmi_int   = 0;
 
         $readmemh("data.hex",     lmem.mem);
