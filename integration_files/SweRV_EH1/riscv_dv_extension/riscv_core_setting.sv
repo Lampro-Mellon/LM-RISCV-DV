@@ -43,7 +43,7 @@ int max_interrupt_vector_num = 16;
 bit support_pmp = 0;
 
 // Debug mode support
-bit support_debug_mode = 0;
+bit support_debug_mode = 1;
 
 // Support delegate trap to user mode
 bit support_umode_trap = 0;
@@ -142,7 +142,7 @@ const privileged_reg_t implemented_csr[] = {
     DCSR,   // Debug control and status register
     DPC   // Debug PC
 //Non-standard CSRs
-    MRAC,
+   /* MRAC,
     MCPC,
     DMST,
     MPMC,
@@ -169,7 +169,7 @@ const privileged_reg_t implemented_csr[] = {
     MEICIDPL,
     MEICURPL,
     MDSEAC,
-    MEIHAP 
+    MEIHAP */
 };
 
 // Implementation-specific custom CSRs

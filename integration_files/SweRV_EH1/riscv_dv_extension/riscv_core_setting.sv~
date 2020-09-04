@@ -140,7 +140,7 @@ const privileged_reg_t implemented_csr[] = {
     TDATA1,   // First Debug/Trace trigger data register
     TDATA2,   // Second Debug/Trace trigger data register
     DCSR,   // Debug control and status register
-    DPC   // Debug PC
+    DPC,   // Debug PC
 //Non-standard CSRs
     MRAC,
     MCPC,
