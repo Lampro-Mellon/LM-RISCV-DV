@@ -38,8 +38,6 @@ cp ../integration_files/SweRV_EH1/riscv_dv_extension/riscv_core_setting.sv ../in
 cp ../integration_files/SweRV_EH1/riscv_dv_extension/testlist.yaml ../integrated_cores/SweRV_EH1/riscv_dv_extension/;
 
 cp ../integration_files/lm_run.py ../google_riscv_dv/;
-rm ../ntegrated_cores/SweRV_EH1/Makefile;
-cp ../integration_files/SweRV_EH1/Makefile ../integrated_cores/SweRV_EH1/;
 
 rm ../google_riscv_dv/scripts/gen_csr_test.py;
 cp ../integration_files/riscv_dv/scripts/gen_csr_test.py ../google_riscv_dv/scripts/;
