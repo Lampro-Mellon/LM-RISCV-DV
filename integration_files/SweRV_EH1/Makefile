@@ -42,7 +42,7 @@ ISS_OPTS            :=
 # ISA
 ISA                 := rv32imc
 # Test name (default: hello_world)
-TEST                := hello_world
+TEST                := riscv_full_interrupt_test
 TESTLIST            := riscv_dv_extension/testlist.yaml
 # Verbose logging
 VERBOSE             :=
@@ -56,10 +56,9 @@ TIMEOUT             := 1800
 # Privileged CSR YAML description file
 CSR_FILE            := 
 # Pass/fail signature address at the end of test
-SIGNATURE_ADDR      := 0xD0580000
-# Linker File Path: if LINK is 1 then use user provided Linker File 
-# else use linker file from google's riscv-dv (scripts/link.ld)
-LINK				:= 1
+SIGNATURE_ADDR      := 8ffffffc
+# Linker File Flag if 1 use custom linker else use linker file from google risc-v dv 
+LINK				= 1
 # provide specific link file
 ifeq (,$(wildcard riscv_dv_extension/$(TEST).ld))
 	# path to custom linker file
@@ -83,22 +82,16 @@ all: sim
 
 instr: iss_sim
 
-sim: compile gen gcc_compile rtl_sim iss_sim post_compare 
-#cov
+sim: compile gen gcc_compile rtl_sim cov_urg_test
 
 .PHONY: clean
 clean:
 	rm -rf verdiLog/
 	rm -rf urgReport/
-	rm -rf ucli.key novas* program.hex program.bin data.hex *.log trace_port.csv
-	#rm -rf out/
+	rm -rf out/
+	rm -rf tests_cov/
+	rm ucli.key novas* program.hex program.bin data.hex *.log trace_port.csv
 
-deep_clean:
-	rm -rf verdiLog/
-	rm -rf urgReport/
-	rm -rf ucli.key novas* program.hex program.bin
-	rm -rf data.hex *.log *.fsdb trace_port.csv
-	rm -rf ${OUT} 
 
 # Common options for all targets
 COMMON_OPTS := $(if $(call equal,$(VERBOSE),1),--verbose,)
@@ -266,32 +259,6 @@ $(metadata)/instr_gen.compile.stamp: \
 
 .PHONY: gcc_compile
 gcc_compile: $(metadata)/instr_gen.compile.stamp
-
-###############################################################################
-# Run the instruction set simulator
-#
-# This (obviously) depends on having compiled the generated programs, so we
-# don't have to worry about variables that affect the 'gen' stage. However, the
-# ISS and ISS_OPTS variables do affect the output, so we need to dump them. See
-# the 'gen' stage for more verbose explanations of how this works.
-iss-var-deps := ISS ISS_OPTS
--include $(metadata)/iss-vars.mk
-iss-vars-prereq = $(call vars-prereq,iss,running ISS,$(iss-var-deps))
-
-$(metadata)/instr_gen.iss.stamp: \
-  $(iss-vars-prereq) $(TESTLIST) $(metadata)/instr_gen.compile.stamp
-	$(verb)python3 ${GEN_DIR}/lm_run.py \
-     --o=$(OUT-SEED)/instr_gen ${GEN_OPTS} \
-     --steps=iss_sim \
-     ${TEST_OPTS} \
-     --iss="${ISS}" \
-     --iss_opts="${ISS_OPTS}" \
-     ${RISCV_DV_OPTS}
-	$(call dump-vars,$(metadata)/iss-vars.mk,iss,$(iss-var-deps))
-	@touch $@
-
-.PHONY: iss_sim
-iss_sim: $(metadata)/instr_gen.iss.stamp
 
 ###############################################################################
 # Compile Core TB
