@@ -158,7 +158,6 @@ class riscv_instr_gen_config extends uvm_object;
   bit                    no_data_page;
   // Options to turn off some specific types of instructions
   bit                    no_branch_jump;     // No branch/jump instruction
-  bit                    gen_exceptions;     // Generate exceptions    
   bit                    no_load_store;      // No load/store instruction
   bit                    no_csr_instr;       // No csr instruction
   bit                    no_ebreak = 1;      // No ebreak instruction
@@ -212,7 +211,7 @@ class riscv_instr_gen_config extends uvm_object;
   bit                    disable_compressed_instr;
   // "Memory mapped" address that when written to will indicate some event to
   // the testbench - testbench will take action based on the value written
-  bit [XLEN - 1 : 0]     signature_addr = 32'hd0580000;
+  bit [XLEN - 1 : 0]     signature_addr = 32'hdead_beef;
   bit                    require_signature_addr = 1'b0;
   // Enable a full or empty debug_rom section.
   // Full debug_rom will contain random instruction streams.
@@ -472,7 +471,6 @@ class riscv_instr_gen_config extends uvm_object;
     `uvm_field_int(tvec_alignment, UVM_DEFAULT)
     `uvm_field_int(no_data_page, UVM_DEFAULT)
     `uvm_field_int(no_branch_jump, UVM_DEFAULT)
-    `uvm_field_int(gen_exceptions, UVM_DEFAULT)
     `uvm_field_int(no_load_store, UVM_DEFAULT)
     `uvm_field_int(no_csr_instr, UVM_DEFAULT)
     `uvm_field_int(no_ebreak, UVM_DEFAULT)
@@ -538,7 +536,6 @@ class riscv_instr_gen_config extends uvm_object;
     get_bool_arg_value("+no_dret=", no_dret);
     get_bool_arg_value("+no_wfi=", no_wfi);
     get_bool_arg_value("+no_branch_jump=", no_branch_jump);
-    get_bool_arg_value("+gen_exceptions=", gen_exceptions);
     get_bool_arg_value("+no_load_store=", no_load_store);
     get_bool_arg_value("+no_csr_instr=", no_csr_instr);
     get_bool_arg_value("+fix_sp=", fix_sp);
