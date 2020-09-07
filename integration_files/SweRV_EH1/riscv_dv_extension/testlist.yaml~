@@ -128,3 +128,4 @@
   rtl_test: core_base_test
   sim_opts: >
     +enable_irq_seq=1
+

@@ -91,7 +91,7 @@ clean:
 	rm -rf verdiLog/
 	rm -rf urgReport/
 	rm -rf ucli.key novas* program.hex program.bin data.hex *.log trace_port.csv
-	rm -rf out/
+	#rm -rf out/
 
 deep_clean:
 	rm -rf verdiLog/
