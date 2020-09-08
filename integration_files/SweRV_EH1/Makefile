@@ -56,7 +56,7 @@ TIMEOUT             := 1800
 # Privileged CSR YAML description file
 CSR_FILE            := 
 # Pass/fail signature address at the end of test
-SIGNATURE_ADDR      := 
+SIGNATURE_ADDR      := 0xd0580000
 # Linker File Path: if LINK is 1 then use user provided Linker File 
 # else use linker file from google's riscv-dv (scripts/link.ld)
 LINK				:= 1
@@ -83,15 +83,15 @@ all: sim
 
 instr: iss_sim
 
-sim: compile gen gcc_compile rtl_sim iss_sim post_compare 
-#cov
+sim: compile gen gcc_compile rtl_sim iss_sim
+#cov  post_compare 
 
 .PHONY: clean
 clean:
 	rm -rf verdiLog/
 	rm -rf urgReport/
 	rm -rf ucli.key novas* program.hex program.bin data.hex *.log trace_port.csv
-	#rm -rf out/
+	rm -rf out/
 
 deep_clean:
 	rm -rf verdiLog/

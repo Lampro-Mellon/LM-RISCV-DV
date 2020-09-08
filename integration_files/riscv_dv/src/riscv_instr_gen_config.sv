@@ -164,6 +164,7 @@ class riscv_instr_gen_config extends uvm_object;
   bit                    no_dret = 1;        // No dret instruction
   bit                    no_fence;           // No fence instruction
   bit                    no_wfi = 1;         // No WFI instruction
+  bit                    gen_exceptions;     // Generate exceptions  
   bit                    enable_unaligned_load_store;
   int                    illegal_instr_ratio;
   int                    hint_instr_ratio;
@@ -475,6 +476,7 @@ class riscv_instr_gen_config extends uvm_object;
     `uvm_field_int(no_csr_instr, UVM_DEFAULT)
     `uvm_field_int(no_ebreak, UVM_DEFAULT)
     `uvm_field_int(no_dret, UVM_DEFAULT)
+    `uvm_field_int(gen_exceptions, UVM_DEFAULT)
     `uvm_field_int(no_fence, UVM_DEFAULT)
     `uvm_field_int(no_wfi, UVM_DEFAULT)
     `uvm_field_int(fix_sp, UVM_DEFAULT)
@@ -551,6 +553,7 @@ class riscv_instr_gen_config extends uvm_object;
     get_bool_arg_value("+no_delegation=", no_delegation);
     get_int_arg_value("+illegal_instr_ratio=", illegal_instr_ratio);
     get_int_arg_value("+hint_instr_ratio=", hint_instr_ratio);
+    get_bool_arg_value("+gen_exceptions=", gen_exceptions);
     get_int_arg_value("+num_of_harts=", num_of_harts);
     get_bool_arg_value("+enable_unaligned_load_store=", enable_unaligned_load_store);
     get_bool_arg_value("+force_m_delegation=", force_m_delegation);

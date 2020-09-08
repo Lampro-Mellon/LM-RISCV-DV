@@ -131,7 +131,45 @@ const privileged_reg_t implemented_csr[] = {
 	MHPMCOUNTER3H,	// Upper 32 bits of mhpmcounter3, RV32I only
 	MHPMCOUNTER4H,	// Upper 32 bits of mhpmcounter4, RV32I only
 	MHPMCOUNTER5H,	// Upper 32 bits of mhpmcounter5, RV32I only
-	MHPMCOUNTER6H	// Upper 32 bits of mhpmcounter6, RV32I only
+	MHPMCOUNTER6H,	// Upper 32 bits of mhpmcounter6, RV32I only
+
+//added
+    MCOUNTEREN, // Machine counter enable
+    MCOUNTINHIBIT,   // Machine counter-inhibit register
+    TSELECT,   // Debug/Trace trigger register select
+    TDATA1,   // First Debug/Trace trigger data register
+    TDATA2,   // Second Debug/Trace trigger data register
+    DCSR,   // Debug control and status register
+    DPC   // Debug PC
+//Non-standard CSRs
+   /* MRAC,
+    MCPC,
+    DMST,
+    MPMC,
+    DICAWICS,
+    DICAD0,
+    DICAD1,
+    DICAGO,
+    MGPMC,
+    MITCNT0,
+    MITB0,
+    MITCTL0,
+    MITCNT1,
+    MITB1,
+    MITCTL1,
+    MICECT,
+    MIICCMECT,
+	  MDCCMECT,
+    MCGC,
+    MFDC,
+	  MDEAU,
+    MEIVT,	
+    MEIPT,
+	  MEICPCT,
+    MEICIDPL,
+    MEICURPL,
+    MDSEAC,
+    MEIHAP */
 };
 
 // Implementation-specific custom CSRs
