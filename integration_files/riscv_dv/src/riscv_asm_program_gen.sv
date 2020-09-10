@@ -122,7 +122,6 @@ class riscv_asm_program_gen extends uvm_object;
       `uvm_info(`gfn, "Generating main program instruction stream...done", UVM_LOW)
       instr_stream = {instr_stream, main_program[hart].instr_string_list};
 
-
 		  if(excep) begin
 			//instr_stream = {instr_stream, $sformatf("%scsrr x31, mstatus", indent)};
  			instr_stream = {instr_stream, $sformatf("%s.4byte 0x11c3f2d3 # kIllegalOpcode", indent)};
@@ -139,7 +138,7 @@ class riscv_asm_program_gen extends uvm_object;
    			instr_stream = {instr_stream, $sformatf("%slw x5, 0(x4) #load access fault", indent)};
    			instr_stream = {instr_stream, $sformatf("%slw x9, 60(x4)", indent)};
 			instr_stream = {instr_stream, $sformatf("%sadd x0, x0, x0", indent)};
-			instr_stream = {instr_stream, $sformatf("%secall", indent)};  
+			//instr_stream = {instr_stream, $sformatf("%secall", indent)};  
 			instr_stream = {instr_stream, $sformatf("%sadd x0, x0, x0", indent)};
 		  end
       // If PMP is supported, need to jump from end of main program to test_done section at the end
@@ -342,8 +341,7 @@ class riscv_asm_program_gen extends uvm_object;
 
   virtual function void gen_program_header();
     string str[$];
-    instr_stream.push_back("#include \"user_define.h\"");
-		instr_stream.push_back("#define STDOUT 0xd0580000");
+    instr_stream.push_back(".include \"user_define.h\"");
     instr_stream.push_back(".globl _start");
     instr_stream.push_back(".section .text");
     if (cfg.disable_compressed_instr) begin
@@ -723,18 +721,11 @@ class riscv_asm_program_gen extends uvm_object;
     string str = format_string("test_done:", LABEL_STR_LEN);
     instr_stream.push_back(str);
     instr_stream.push_back({indent, "li gp, 1"});
-    instr_stream.push_back({indent, "li x3, STDOUT"});
-    instr_stream.push_back({indent, "li x5, 0xff"});
-    instr_stream.push_back({indent, "sb x5, 0(x3)"}); 
-
-   /* string str = format_string("test_done:", LABEL_STR_LEN);
-    instr_stream.push_back(str);
-    instr_stream.push_back({indent, "li gp, 1"});
     if (cfg.bare_program_mode) begin
       instr_stream.push_back({indent, "j write_tohost"});
     end else begin
       instr_stream.push_back({indent, "ecall"});
-    end  */
+    end
   endfunction
 
   // Dump all GPR to the starting point of the program
@@ -775,8 +766,6 @@ class riscv_asm_program_gen extends uvm_object;
     trap_vector_init(hart);
     // Setup PMP CSRs
     setup_pmp(hart);
-    // Generate PMPADDR write test sequence
-   // gen_pmp_csr_write(hart); ////////////////////////////////////////////////////////////
     // Initialize PTE (link page table based on their real physical address)
     if(cfg.virtual_addr_translation_on) begin
       page_table_list.process_page_table(instr);
@@ -867,17 +856,6 @@ class riscv_asm_program_gen extends uvm_object;
       gen_section(get_label("pmp_setup", hart), instr);
     end
   endfunction
-
-  // Generates a directed stream of instructions to write random values to all supported
-  // pmpaddr CSRs to test write accessibility.
-  // The original CSR values are restored afterwards.
- /* virtual function void gen_pmp_csr_write(int hart);
-    string instr[$];
-    if (riscv_instr_pkg::support_pmp && cfg.pmp_cfg.enable_write_pmp_csr) begin
-      cfg.pmp_cfg.gen_pmp_write_test({cfg.scratch_reg, cfg.pmp_reg}, instr);
-      gen_section(get_label("pmp_csr_write_test", hart), instr);
-    end 
-  endfunction */
 
   // Handles creation of a subroutine to initialize any custom CSRs
   virtual function void setup_custom_csrs(int hart);
@@ -1111,6 +1089,7 @@ class riscv_asm_program_gen extends uvm_object;
              $sformatf("beq x%0d, x%0d, %0sinstr_fault_handler",
                        cfg.gpr[0], cfg.gpr[1], hart_prefix(hart)),
              $sformatf("li x%0d, 0x%0x", cfg.gpr[1], LOAD_ACCESS_FAULT),
+             $sformatf("li x%0d, 0x%0x", cfg.gpr[1], LOAD_ACCESS_FAULT),
              $sformatf("beq x%0d, x%0d, %0sload_access_fault_handler",
                        cfg.gpr[0], cfg.gpr[1], hart_prefix(hart)),
              $sformatf("li x%0d, 0x4", cfg.gpr[1]),
@@ -1192,28 +1171,14 @@ class riscv_asm_program_gen extends uvm_object;
   // It does some clean up like dump GPRs before communicating with host to terminate the test.
   // User can extend this function if some custom clean up routine is needed.
   virtual function void gen_ecall_handler(int hart);
-string instr[$];
-    gen_signature_handshake(instr, CORE_STATUS, INSTR_FAULT_EXCEPTION);
-    gen_signature_handshake(.instr(instr), .signature_type(WRITE_CSR), .csr(MCAUSE));
-    instr = {instr,
-			$sformatf("csrr  x6, mcause"),
-			$sformatf("csrr  x7, mepc"),
-			$sformatf("csrr  x11, mstatus"),
-            $sformatf("addi  x7, x7, 4"),
-            $sformatf("csrw  mepc, x7"),
-			$sformatf("csrr  x7, mepc")
-    };
-    pop_gpr_from_kernel_stack(MSTATUS, MSCRATCH, cfg.mstatus_mprv, cfg.sp, cfg.tp, instr);
-    instr.push_back("mret");
-    gen_section(get_label("ecall_handler", hart), instr);
-    /*string str;
+    string str;
     str = format_string(get_label("ecall_handler:", hart), LABEL_STR_LEN);
     instr_stream.push_back(str);
     dump_perf_stats();
     gen_register_dump();
     str = format_string(" ", LABEL_STR_LEN);
     str = {str, "j write_tohost"};
-    instr_stream.push_back(str); */
+    instr_stream.push_back(str);
   endfunction
 
   // Ebreak trap handler
@@ -1229,12 +1194,9 @@ string instr[$];
     gen_signature_handshake(instr, CORE_STATUS, EBREAK_EXCEPTION);
     gen_signature_handshake(.instr(instr), .signature_type(WRITE_CSR), .csr(MCAUSE));
     instr = {instr,
-			$sformatf("csrr  x6, mcause"),
-			$sformatf("csrr  x7, mepc"),
-			$sformatf("csrr  x11, mstatus"),
-            $sformatf("addi  x7, x7, 4"),
-            $sformatf("csrw  mepc, x7"),
-			$sformatf("csrr  x7, mepc")
+            $sformatf("csrr  x%0d, 0x%0x", cfg.gpr[0], MEPC),
+            $sformatf("addi  x%0d, x%0d, 4", cfg.gpr[0], cfg.gpr[0]),
+            $sformatf("csrw  0x%0x, x%0d", MEPC, cfg.gpr[0])
     };
     pop_gpr_from_kernel_stack(MSTATUS, MSCRATCH, cfg.mstatus_mprv, cfg.sp, cfg.tp, instr);
     instr.push_back("mret");
