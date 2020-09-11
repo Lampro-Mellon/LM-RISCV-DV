@@ -982,4 +982,36 @@ function int get_iccm_bank(input int addr,  output int bank_idx);
 `endif
 endfunction
 
+//tracer instantiation
+logic [9:0]  rw_addr, ra_addr, rb_addr;
+logic [63:0] rw_data, ra_data, rb_data; 
+
+assign ra_addr = {rvtop.swerv.dec.dec_i1_rs1_d[4:0],rvtop.swerv.dec.dec_i0_rs1_d[4:0]};
+assign rb_addr = {rvtop.swerv.dec.dec_i1_rs2_d[4:0],rvtop.swerv.dec.dec_i0_rs2_d[4:0]};
+assign ra_data = {rvtop.swerv.dec.gpr_i1_rs1_d,rvtop.swerv.dec.gpr_i0_rs1_d};
+assign rb_data = {rvtop.swerv.dec.gpr_i1_rs2_d,rvtop.swerv.dec.gpr_i0_rs2_d};
+assign rw_addr = {wb_dest[1],wb_dest[0]};
+assign rw_data = {wb_data[1],wb_data[0]};
+ 
+tracer 	swerv_tracer(
+  .clk_i			(core_clk),                      
+  .rst_ni			(rst_l),                        
+  .hart_id_i			('h0),
+  .rvfi_valid			(trace_rv_i_valid_ip),     
+  .rvfi_pc_rdata_t		(trace_rv_i_address_ip),					
+  .rvfi_insn_t			(trace_rv_i_insn_ip),		 
+  .rvfi_pc_wdata_t		(trace_rv_i_address_ip),				
+  .rvfi_rs1_addr_t		(ra_addr),                
+  .rvfi_rs2_addr_t		(rb_addr),                              
+  .rvfi_rs1_rdata_t		(ra_data),               
+  .rvfi_rs2_rdata_t		(rb_data),                
+  .rvfi_rd_addr_t		(rw_addr),                
+  .rvfi_rd_wdata_t		(rw_data),               
+  .rvfi_mem_addr		(32'h0),     
+  .rvfi_mem_rmask		(4'hf),
+  .rvfi_mem_wmask		(4'hf),       
+  .rvfi_mem_rdata		(32'h0),
+  .rvfi_mem_wdata		(32'h0)        
+);
+
 endmodule

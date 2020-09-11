@@ -42,7 +42,7 @@ ISS_OPTS            :=
 # ISA
 ISA                 := rv32imc
 # Test name (default: hello_world)
-TEST                := hello_world
+TEST                := riscv_arithmetic_basic_test
 TESTLIST            := riscv_dv_extension/testlist.yaml
 # Verbose logging
 VERBOSE             :=
@@ -375,6 +375,22 @@ $(metadata)/rtl_sim.run.stamp: \
 
 .PHONY: rtl_sim
 rtl_sim: $(metadata)/rtl_sim.run.stamp
+
+###############################################################################
+# Compare ISS and RTL sim results
+$(OUT-SEED)/regr.log: \
+  $(metadata)/instr_gen.iss.stamp \
+  $(metadata)/rtl_sim.run.stamp $(TESTLIST)
+	@rm -f $@
+	@./sim.py \
+     --o=$(OUT-SEED) \
+     --steps=compare \
+     ${TEST_OPTS} \
+     --simulator="${SIMULATOR}" \
+     --iss="${ISS}"
+
+.PHONY: post_compare
+post_compare: $(OUT-SEED)/regr.log
 
 ###############################################################################
 # Generate urg report for all speeds
