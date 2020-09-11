@@ -34,6 +34,7 @@
       env SIM_DIR=<sim_dir>
         <out>/vcs_simv +vcs+lic+wait
         <sim_opts> <wave_opts> <cov_opts>
+        +tracer_file_base=<sim_dir>/trace_core
         -l <sim_dir>/sim.log
     wave_opts: >
       -ucli -do <cwd>/vcs.tcl

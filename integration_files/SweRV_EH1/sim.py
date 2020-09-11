@@ -455,9 +455,9 @@ def compare_test_run(test, idx, iss, output_dir, report):
     # Have a look at the UVM log. We should write out a message on failure or
     # if we are stopping at this point.
     no_post_compare = test.get('no_post_compare')
-    if not check_core_uvm_log(uvm_log, "core", test_name, report,
-                              write=(True if no_post_compare else 'onfail')):
-        return False
+    # if not check_core_uvm_log(uvm_log, "core", test_name, report,
+    #                          write=(True if no_post_compare else 'onfail')):
+    #    return False
 
     if no_post_compare:
         return True
@@ -484,7 +484,7 @@ def compare_test_run(test, idx, iss, output_dir, report):
 
 
 def compare(test_list, iss, output_dir):
-    """Compare RTL & ISS simulation reult
+    """Compare RTL & ISS simulation result
 
     Here, test_list is a list of tests read from the testlist YAML file. iss is
     the instruction set simulator that was used (must be 'spike' or 'ovpsim')

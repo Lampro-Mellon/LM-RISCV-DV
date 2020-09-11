@@ -53,5 +53,8 @@ ${PRJ_DIR}/rtl/dmi/rvjtag_tap.sv
 -v ${PRJ_DIR}/rtl/lib/axi4_to_ahb.sv
 
 // Including Testbench Files
+${PRJ_DIR}/testbench/pkg.sv
+${PRJ_DIR}/testbench/tracer_pkg.sv
+${PRJ_DIR}/testbench/tracer.sv
 ${PRJ_DIR}/testbench/ahb_sif.sv
 ${PRJ_DIR}/testbench/tb_top.sv
