@@ -343,7 +343,7 @@ def main():
   args = parser.parse_args()
 
   """All supported CSR operations"""
-  csr_ops = ['csrrw', 'csrrs', 'csrrc', 'csrrwi',  'scrrsi', 'csrrci']
+  csr_ops = ['csrrw', 'csrrs', 'csrrc', 'csrrwi',  'csrrsi', 'csrrci']
 
   """
   Seed the RNG.
