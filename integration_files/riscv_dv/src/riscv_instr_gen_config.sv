@@ -101,6 +101,7 @@ class riscv_instr_gen_config extends uvm_object;
   // processor.
   bit                    check_misa_init_val = 1'b0;
   bit                    check_xstatus = 1'b1;
+  bit			 gen_exceptions;
 
   // Virtual address translation is on for this test
   rand bit               virtual_addr_translation_on;
@@ -476,6 +477,7 @@ class riscv_instr_gen_config extends uvm_object;
     `uvm_field_int(no_ebreak, UVM_DEFAULT)
     `uvm_field_int(no_dret, UVM_DEFAULT)
     `uvm_field_int(no_fence, UVM_DEFAULT)
+    `uvm_field_int(gen_exceptions, UVM_DEFAULT)
     `uvm_field_int(no_wfi, UVM_DEFAULT)
     `uvm_field_int(fix_sp, UVM_DEFAULT)
     `uvm_field_int(enable_unaligned_load_store, UVM_DEFAULT)
@@ -551,6 +553,7 @@ class riscv_instr_gen_config extends uvm_object;
     get_bool_arg_value("+no_delegation=", no_delegation);
     get_int_arg_value("+illegal_instr_ratio=", illegal_instr_ratio);
     get_int_arg_value("+hint_instr_ratio=", hint_instr_ratio);
+    get_bool_arg_value("+gen_exceptions=", gen_exceptions);
     get_int_arg_value("+num_of_harts=", num_of_harts);
     get_bool_arg_value("+enable_unaligned_load_store=", enable_unaligned_load_store);
     get_bool_arg_value("+force_m_delegation=", force_m_delegation);
