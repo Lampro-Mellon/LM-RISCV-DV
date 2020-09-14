@@ -180,15 +180,7 @@ def predict_csr_val(csr_op, rs1_val, csr_val, csr_address, csr_write_mask, csr_r
   prediction = csr_read(csr_val, csr_read_mask)
   if csr_op == 'csrrw':
       csr_write(rs1_val, csr_val, csr_write_mask)
-  """elif csr_op == 'csrrs':
-    if  ((csr_val[5] & csr_val[4] & (csr_val[3]|csr_val[2]|csr_val[1])) | ((csr_val[31])|(csr_val[30])|(csr_val[29])|(csr_val[28])|(csr_val[27])|
-       (csr_val[26])|(csr_val[25])|(csr_val[24])|(csr_val[23])|(csr_val[22])|(csr_val[21])|(csr_val[20])|(csr_val[19])|(csr_val[18])|
-       (csr_val[17])|(csr_val[16])|(csr_val[15])|(csr_val[14])|(csr_val[13])|(csr_val[12])|(csr_val[11])|(csr_val[10])|(csr_val[9])|
-       (csr_val[8])|(csr_val[7])|(csr_val[6]))):
-      #csr_read_mask[i] = [0 for i in range(6, 31)]
-      #csr_write_mask[i] = [0 for i in range(6, 31)]
-      csr_write(rs1_val | prediction, csr_val, csr_write_mask)
-    else:
+  elif csr_op == 'csrrs':
       csr_write(rs1_val | prediction, csr_val, csr_write_mask)
   elif csr_op == 'csrrc':
     csr_write((~rs1_val) & prediction, csr_val, csr_write_mask)
@@ -200,7 +192,7 @@ def predict_csr_val(csr_op, rs1_val, csr_val, csr_address, csr_write_mask, csr_r
     csr_write(zero | prediction, csr_val, csr_write_mask)
   elif csr_op == 'csrrci':
     zero.append(rs1_val[-5:])
-    csr_write((~zero) & prediction, csr_val, csr_write_mask) """
+    csr_write((~zero) & prediction, csr_val, csr_write_mask) 
   return f"0x{prediction.hex}"
 
 
@@ -351,7 +343,7 @@ def main():
   args = parser.parse_args()
 
   """All supported CSR operations"""
-  csr_ops = ['csrrw']
+  csr_ops = ['csrrw', 'csrrs', 'csrrc', 'csrrwi',  'scrrsi', 'csrrci']
 
   """
   Seed the RNG.
