@@ -7,6 +7,7 @@ LM RISCV-DV is a verfication environment based on the verification environment f
 - Test Compilation (Random, Directed)
 - RTL Simulation
 - ISS Simulation
+- Post Comparison with ISS
 - URG Coverage Report Generation
 
 ## Directory Structure
@@ -17,12 +18,13 @@ LM RISCV-DV is a verfication environment based on the verification environment f
 ├── integrated_cores
 ├── integration_files
 └── scripts
-    └── core_integrate.sh
+    ├── core_integrate.sh
+    └── toolchain_paths.sh
 ```
 
 ### cores/
 
-This directory will contain the cores in their original source forms, cloned from their sites. Cuurently, LM RISC-V DV has been setup and tested for **SweRV EH-1** core from **Western Digital**.
+This directory will contain the cores in their original source forms, cloned from their sites. Currently, LM RISC-V DV has been setup and tested for **SweRV EH-1** core from **Western Digital**.
 
 ### google_riscv_dv/
 
