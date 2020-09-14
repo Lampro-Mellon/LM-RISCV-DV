@@ -56,7 +56,7 @@ TIMEOUT             := 1800
 # Privileged CSR YAML description file
 CSR_FILE            := 
 # Pass/fail signature address at the end of test
-SIGNATURE_ADDR      := 
+SIGNATURE_ADDR      := 0xd0580000
 # Linker File Path: if LINK is 1 then use user provided Linker File 
 # else use linker file from google's riscv-dv (scripts/link.ld)
 LINK				:= 1

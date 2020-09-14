@@ -29,4 +29,11 @@ cp -r ../integration_files/SweRV_EH1/testbench ../integrated_cores/SweRV_EH1/;
 
 cp ../integration_files/lm_run.py ../google_riscv_dv/;
 
+rm ../google_riscv_dv/src/riscv_instr_gen_config.sv;
 cp ../integration_files/riscv_dv/src/riscv_instr_gen_config.sv ../google_riscv_dv/src/;
+
+rm ../google_riscv_dv/scripts/gen_csr_test.py;
+cp ../integration_files/riscv_dv/scripts/gen_csr_test.py ../google_riscv_dv/scripts/;
+
+rm ../google_riscv_dv/yaml/csr_template.yaml;
+cp ../integration_files/riscv_dv/yaml/csr_template.yaml ../google_riscv_dv/yaml/;
