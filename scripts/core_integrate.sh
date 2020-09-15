@@ -1,39 +1,78 @@
 #!/bin/bash
 
-# rv_dv_remote        = https://github.com/google/riscv-dv.git
-# rv_dv_commit_sha    = 67148f58ab4c73b2039b2d0880535525fd7a76a7
+SCRIPT_PATH=$( dirname "${BASH_SOURCE[0]}")
+BASE_DIR=$(cd ${SCRIPT_PATH}; cd ..; pwd)
 
-# swerv_remote        = https://github.com/chipsalliance/Cores-SweRV.git
-# swerv_commit_sha    = 48f01f101eeeb8c75013afb4546e01b0fda08984
+RV_DV_REMOTE='https://github.com/google/riscv-dv.git'
+RV_DV_COMMIT_SHA='67148f58ab4c73b2039b2d0880535525fd7a76a7'
+
+SWERV_REMOTE='https://github.com/chipsalliance/Cores-SweRV.git'
+SWERV_COMMIT_SHA='48f01f101eeeb8c75013afb4546e01b0fda08984'
+
+CORES="${BASE_DIR}/cores"
+INTEGRATED_CORES="${BASE_DIR}/integrated_cores"
+INTEGRATION_FILES="${BASE_DIR}/integration_files"
+RV_DV="${BASE_DIR}/google_riscv_dv"
+
+SWERV_LOCAL="${CORES}/SweRV_EH1"
 
 
-# rv_dv_local         = ../google_riscv_dv
-# swerv_local         = ../cores/SweRV_EH1
+# Clone Google's RISC-V DV if it does not exit
+printf "Checking for Google's RISC-V DV with COMMIT ID: ${RV_DV_COMMIT_SHA} ...\n\n"
+if [ -d "${RV_DV}" ] && [ -d "${RV_DV}/.git" ]
+then
+    printf "${RV_DV}/ is already a git repository \n"
+    cd ${RV_DV}
+    RV_DV_SHA_OUTPUT=$(git log -1 --pretty=format:"%H")
+else
+    printf "${RV_DV}/ is not a git repository \n"
+    RV_DV_SHA_OUTPUT="-1"
+fi
 
-rm -rf ../cores/* ../google_riscv_dv/* ../google_riscv_dv/.* ../integrated_cores/*
+if [ ${RV_DV_SHA_OUTPUT} != ${RV_DV_COMMIT_SHA} ]
+then 
+    git clone ${RV_DV_REMOTE} ${RV_DV}
+    cd ${RV_DV}
+    git checkout ${RV_DV_COMMIT_SHA}
+else
+    printf "HEAD of ${RV_DV} is already at ${RV_DV_COMMIT_SHA}! \n\n"
+fi
 
-git clone https://github.com/google/riscv-dv.git ../google_riscv_dv;
-cd ../google_riscv_dv;
-git checkout 67148f58ab4c73b2039b2d0880535525fd7a76a7;
 
-git clone https://github.com/chipsalliance/Cores-SweRV.git ../cores/SweRV_EH1;
-cd ../cores/SweRV_EH1;
-git checkout 48f01f101eeeb8c75013afb4546e01b0fda08984;
-cd ..;
+# # Clone SweRV EH-1 if it does not exit
+printf "Checking for SweRV EH-1 with COMMIT ID: ${SWERV_COMMIT_SHA} ...\n\n"
+if [ -d "${SWERV_LOCAL}" ] && [ -d "${SWERV_LOCAL}/.git" ]
+then
+    printf "${SWERV_LOCAL}/ is already a git repository \n"
+    cd ${SWERV_LOCAL}
+    SWERV_SHA_OUTPUT=$(git log -1 --pretty=format:"%H")
+else
+    printf "${SWERV_LOCAL}/ is not a git repository \n"
+    SWERV_SHA_OUTPUT="-1"
+fi
 
-echo "Setting up a Environment for SweRV EH-1 core in integrated_cores/SweRV_EH1";
-cp -r ../integration_files/SweRV_EH1 ../integrated_cores/SweRV_EH1;
+if [ ${SWERV_SHA_OUTPUT} != ${SWERV_COMMIT_SHA} ]
+then 
+    git clone ${SWERV_REMOTE} ${SWERV_LOCAL};
+    cd ${SWERV_LOCAL};
+    git checkout ${SWERV_COMMIT_SHA};
+else
+    printf "HEAD of ${SWERV_LOCAL} is already at ${SWERV_COMMIT_SHA}! \n\n"
+fi
 
-cp -r ../cores/SweRV_EH1/design ../integrated_cores/SweRV_EH1/rtl/;
-cp -r ../integration_files/SweRV_EH1/testbench ../integrated_cores/SweRV_EH1/;
+# Environment Setup for SweRV EH-1
+printf "Setting up the Environment for SweRV EH-1 core in integrated_cores/SweRV_EH1 ...\n";
 
-cp ../integration_files/lm_run.py ../google_riscv_dv/;
+rm -rf "${INTEGRATED_CORES}/*"
+cp -r "${INTEGRATION_FILES}/SweRV_EH1" "${INTEGRATED_CORES}/SweRV_EH1";
+cp -r "${INTEGRATION_FILES}/SweRV_EH1/testbench" "${INTEGRATED_CORES}/SweRV_EH1/";
+cp -r "${CORES}/SweRV_EH1/design" "${INTEGRATED_CORES}/SweRV_EH1/rtl/";
 
-rm ../google_riscv_dv/src/riscv_instr_gen_config.sv;
-cp ../integration_files/riscv_dv/src/riscv_instr_gen_config.sv ../google_riscv_dv/src/;
+rm "${RV_DV}/src/riscv_instr_gen_config.sv";
+rm "${RV_DV}/scripts/gen_csr_test.py";
+rm "${RV_DV}/yaml/csr_template.yaml";
 
-rm ../google_riscv_dv/scripts/gen_csr_test.py;
-cp ../integration_files/riscv_dv/scripts/gen_csr_test.py ../google_riscv_dv/scripts/;
-
-rm ../google_riscv_dv/yaml/csr_template.yaml;
-cp ../integration_files/riscv_dv/yaml/csr_template.yaml ../google_riscv_dv/yaml/;
+cp "${INTEGRATION_FILES}/lm_run.py" "${RV_DV}/";
+cp "${INTEGRATION_FILES}/riscv_dv/src/riscv_instr_gen_config.sv" "${RV_DV}/src/";
+cp "${INTEGRATION_FILES}/riscv_dv/scripts/gen_csr_test.py" "${RV_DV}/scripts/";
+cp "${INTEGRATION_FILES}/riscv_dv/yaml/csr_template.yaml" "${RV_DV}/yaml/";
