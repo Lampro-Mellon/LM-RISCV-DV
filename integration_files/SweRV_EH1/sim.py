@@ -443,6 +443,11 @@ def compare_test_run(test, idx, iss, output_dir, report):
     rtl_csv = os.path.join(rtl_dir, 'trace_core_00000000.csv')
     uvm_log = os.path.join(rtl_dir, 'sim.log')
 
+    if not os.path.exists(rtl_log):
+        with open(report, 'a') as report_fd:
+            report_fd.write('{} does not exist\n'.format(rtl_log))
+        return False
+
     try:
         # Convert the RTL log file to a trace CSV.
         process_core_sim_log(rtl_log, rtl_csv, 1)
@@ -450,6 +455,11 @@ def compare_test_run(test, idx, iss, output_dir, report):
         with open(report, 'a') as report_fd:
             report_fd.write('Log processing failed: {}\n'.format(e))
 
+        return False
+
+    if not os.path.exists(rtl_csv):
+        with open(report, 'a') as report_fd:
+            report_fd.write('{} does not exist\n'.format(rtl_csv))
         return False
 
     # Have a look at the UVM log. We should write out a message on failure or
@@ -468,11 +478,21 @@ def compare_test_run(test, idx, iss, output_dir, report):
     iss_log = os.path.join(iss_dir, '{}.{}.log'.format(test_name, idx))
     iss_csv = os.path.join(iss_dir, '{}.{}.csv'.format(test_name, idx))
 
+    if not os.path.exists(iss_log):
+        with open(report, 'a') as report_fd:
+            report_fd.write('{} does not exist\n'.format(iss_log))
+        return False
+
     if iss == "spike":
         process_spike_sim_log(iss_log, iss_csv)
     else:
         assert iss == 'ovpsim'  # (should be checked by argparse)
         process_ovpsim_sim_log(iss_log, iss_csv)
+
+    if not os.path.exists(iss_csv):
+        with open(report, 'a') as report_fd:
+            report_fd.write('{} does not exist\n'.format(iss_csv))
+        return False
 
     compare_result = \
         compare_trace_csv(rtl_csv, iss_csv, "core", iss, report,
