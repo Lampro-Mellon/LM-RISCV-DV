@@ -34,6 +34,7 @@ INSTR_RE = \
                r"(?P<bin>[0-9a-f]+)\s+(?P<instr>\S+\s+\S+)\s*")
 RD_RE = re.compile(r"(x(?P<rd>[1-9]\d*)=0x(?P<rd_val>[0-9a-f]+))")
 ADDR_RE = re.compile(r"(?P<imm>[\-0-9]+?)\((?P<rs1>.*)\)")
+OPERANDS_RE = re.compile(r"(?P<reg1>\w+),(?P<imm>[0-9a-fA-F-]+)\((?P<reg2>\w+)\)")
 
 
 def _process_core_sim_log_fd(log_fd, csv_fd, full_trace=True):
@@ -72,7 +73,9 @@ def _process_core_sim_log_fd(log_fd, csv_fd, full_trace=True):
                 # Convert the operands into ABI format for
                 # the functional coverage flow
                 operands = m.group("instr").split()[1]
-                trace_entry.operand = convert_operands_to_abi(operands)
+                trace_entry.operand = operands
+                process_operands(trace_entry)
+                trace_entry.operand = convert_operands_to_abi(trace_entry.operand)
                 process_trace(trace_entry)
 
         c = RD_RE.search(line)
@@ -138,6 +141,13 @@ def process_trace(trace):
         n = ADDR_RE.search(trace.operand)
         if n:
             trace.imm = get_imm_hex_val(n.group("imm"))
+
+
+def process_operands(trace):
+    """Seperate Instruction Operands by commas"""
+    ops = OPERANDS_RE.search(trace.operand)
+    if ops:
+        trace.operand = "{0},{1},{2}".format(ops.group('reg1'),ops.group('imm'),ops.group('reg2'))
 
 
 def process_imm(trace):
