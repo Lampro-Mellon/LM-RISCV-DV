@@ -762,10 +762,14 @@ int i=0;
   	for(int i=0; i<2; i++) begin
 		if (rvfi_valid[i]) begin
 			rvfi_insn = rvfi_insn_t[31+i*32 -:32]; 
-  			rvfi_pc_rdata = rvfi_pc_rdata_t[31+i*32 -:32];
+  		rvfi_pc_rdata = rvfi_pc_rdata_t[31+i*32 -:32];
   			
-  			rvfi_rs1_addr = rvfi_rs1_addr_t[4+i*5 -:5];
-			rvfi_rs2_addr = rvfi_rs2_addr_t[4+i*5 -:5];
+      // TODO: Get rs1_addr and rs2_addr from independent of instruction binary from tb_top.sv   			
+  		// rvfi_rs1_addr = rvfi_rs1_addr_t[4+i*5 -:5];
+			// rvfi_rs2_addr = rvfi_rs2_addr_t[4+i*5 -:5];
+  		rvfi_rs1_addr = rvfi_insn[19:15];
+			rvfi_rs2_addr = rvfi_insn[24:20];
+
 			rvfi_rs1_rdata = rvfi_rs1_rdata_t[31+i*32 -:32];
 			rvfi_rs2_rdata = rvfi_rs2_rdata_t[31+i*32 -:32]; 
 			rvfi_rd_addr = rvfi_rd_addr_t[4+i*5 -:5];
