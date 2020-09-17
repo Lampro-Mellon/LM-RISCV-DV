@@ -26,16 +26,11 @@
   iterations: 1
   rtl_test: core_base_test_benchmark
 
-- test: riscv_arithmetic_basic_test_0
-  asm_tests: directed_tests/asm/riscv_sample_test/riscv_arithmetic_basic_test_0.S
-  iterations: 1
-  rtl_test: core_base_test_benchmark
-
 - test: riscv_arithmetic_basic_test
   description: >
     Arithmetic instruction test, no load/store/branch instructions
   gen_opts: >
-    +instr_cnt=1000
+    +instr_cnt=5000
     +num_of_sub_program=0
     +directed_instr_0=riscv_int_numeric_corner_stream,4
     +no_fence=1
@@ -50,7 +45,7 @@
 - test: riscv_load_store_instr_dccm_test
   description: >
     Random instruction stress test
-  iterations: 1
+  iterations: 2
   gen_test: riscv_instr_base_test
   gen_opts: >
     +instr_cnt=1000
@@ -64,7 +59,7 @@
   iterations: 2
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=10000
+    +instr_cnt=5000
     +num_of_sub_program=5
     +directed_instr_0=riscv_load_store_rand_instr_stream,4
     +directed_instr_1=riscv_loop_instr,4

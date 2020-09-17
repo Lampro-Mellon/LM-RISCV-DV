@@ -2,6 +2,7 @@
 
 SCRIPT_PATH=$( dirname "${BASH_SOURCE[0]}")
 BASE_DIR=$(cd ${SCRIPT_PATH}; cd ..; pwd)
+echo "BASE_DIR = ${BASE_DIR}"
 
 RV_DV_REMOTE='https://github.com/google/riscv-dv.git'
 RV_DV_COMMIT_SHA='67148f58ab4c73b2039b2d0880535525fd7a76a7'
@@ -17,7 +18,7 @@ RV_DV="${BASE_DIR}/google_riscv_dv"
 SWERV_LOCAL="${CORES}/SweRV_EH1"
 
 
-# Clone Google's RISC-V DV if it does not exit
+# Clone Google's RISC-V DV if it does not exist
 printf "Checking for Google's RISC-V DV with COMMIT ID: ${RV_DV_COMMIT_SHA} ...\n\n"
 if [ -d "${RV_DV}" ] && [ -d "${RV_DV}/.git" ]
 then
@@ -39,7 +40,7 @@ else
 fi
 
 
-# # Clone SweRV EH-1 if it does not exit
+# # Clone SweRV EH-1 if it does not exist
 printf "Checking for SweRV EH-1 with COMMIT ID: ${SWERV_COMMIT_SHA} ...\n\n"
 if [ -d "${SWERV_LOCAL}" ] && [ -d "${SWERV_LOCAL}/.git" ]
 then
@@ -63,7 +64,7 @@ fi
 # Environment Setup for SweRV EH-1
 printf "Setting up the Environment for SweRV EH-1 core in integrated_cores/SweRV_EH1 ...\n";
 
-rm -rf "${INTEGRATED_CORES}/*"
+rm -rf "${INTEGRATED_CORES}/SweRV_EH1/"
 cp -r "${INTEGRATION_FILES}/SweRV_EH1" "${INTEGRATED_CORES}/SweRV_EH1";
 cp -r "${INTEGRATION_FILES}/SweRV_EH1/testbench" "${INTEGRATED_CORES}/SweRV_EH1/";
 cp -r "${CORES}/SweRV_EH1/design" "${INTEGRATED_CORES}/SweRV_EH1/rtl/";
