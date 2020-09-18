@@ -737,3 +737,63 @@
       reset_val: 0
       msb: 3
       lsb: 0
+
+# MHPMEVENT3
+- csr: mhpmevent3
+  description: >
+    Event counter
+  address: 0x323
+  privilege_mode: M
+  rv32:
+    - field_name: event
+      description: >
+        Event counter
+      type: WARL
+      reset_val: 0
+      msb: 5
+      lsb: 0
+
+# MHPMEVENT4
+- csr: mhpmevent4
+  description: >
+    Event counter
+  address: 0x324
+  privilege_mode: M
+  rv32:
+    - field_name: event
+      description: >
+        Event counter
+      type: WARL
+      reset_val: 0
+      msb: 5
+      lsb: 0
+
+# MHPMEVENT5
+- csr: mhpmevent5
+  description: >
+    Event counter
+  address: 0x325
+  privilege_mode: M
+  rv32:
+    - field_name: event
+      description: >
+        Event counter
+      type: WARL
+      reset_val: 0
+      msb: 5
+      lsb: 0
+
+# MHPMEVENT6
+- csr: mhpmevent6
+  description: >
+    Event counter
+  address: 0x326
+  privilege_mode: M
+  rv32:
+    - field_name: event
+      description: >
+        Event counter
+      type: WARL
+      reset_val: 0
+      msb: 5
+      lsb: 0

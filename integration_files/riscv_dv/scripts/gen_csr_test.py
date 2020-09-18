@@ -175,14 +175,33 @@ def predict_csr_val(csr_op, rs1_val, csr_val, csr_address, csr_write_mask, csr_r
     A hexadecimal string of the predicted CSR value.
   """
   prediction = None
+  max_event = bitarray(uint=50, length=32)
   # create a zero bitarray to zero extend immediates
   zero = bitarray(uint=0, length=csr_val.len - 5)
   prediction = csr_read(csr_val, csr_read_mask)
   if csr_op == 'csrrw':
+    if (csr_address == 803 or csr_address == 804 or csr_address == 805 or csr_address == 806):
+      if(max_event.uint<rs1_val.uint):
+        csr_val.overwrite(bitarray(uint=50, length=32), 0) 
+      else:
+        csr_write(rs1_val, csr_val, csr_write_mask)
+    else:
       csr_write(rs1_val, csr_val, csr_write_mask)
   elif csr_op == 'csrrs':
+    if (csr_address == 803 or csr_address == 804 or csr_address == 805 or csr_address == 806):
+      if((max_event.uint<rs1_val.uint) or (max_event.uint<=csr_val.uint)):
+        csr_val.overwrite(bitarray(uint=50, length=32), 0) 
+      else:
+        csr_write(rs1_val, csr_val, csr_write_mask)
+    else:
       csr_write(rs1_val | prediction, csr_val, csr_write_mask)
   elif csr_op == 'csrrc':
+    """if (csr_address == 803 or csr_address == 804 or csr_address == 805 or csr_address == 806):
+      if(max_event.uint<rs1_val.uint):
+        csr_val.overwrite(bitarray(uint=0, length=32), 0)
+      else:
+        csr_write((~rs1_val) & prediction, csr_val, csr_write_mask)
+    else:"""
     csr_write((~rs1_val) & prediction, csr_val, csr_write_mask)
   elif csr_op == 'csrrwi':
     zero.append(rs1_val[-5:])
