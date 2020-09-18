@@ -299,13 +299,17 @@ module tb_top;
     parameter MAX_CYCLES = 10_000_000;
 
     integer fd, tp, el;
+    bit finish_ecall;
 
     always @(negedge core_clk) begin
         cycleCnt <= cycleCnt+1;
-    	if (trace_rv_i_valid_ip !== 0) begin
+    	if (finish_ecall) begin
+            $finish;
+        end
+        if (trace_rv_i_valid_ip !== 0) begin
 			if (trace_rv_i_insn_ip[31:0] == 32'h0000_0073 || trace_rv_i_insn_ip[63:32] == 32'h0000_0073) begin
 				$display ("Finishing the test on ecall",cycleCnt);
-				$finish;
+				finish_ecall = 1;
 			end
 		end
 // Test timeout monitor

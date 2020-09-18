@@ -35,7 +35,7 @@ INSTR_RE = \
 RD_RE = re.compile(r"(x(?P<rd>[1-9]\d*)=0x(?P<rd_val>[0-9a-f]+))")
 ADDR_RE = re.compile(r"(?P<imm>[\-0-9]+?)\((?P<rs1>.*)\)")
 OPERANDS_RE = re.compile(r"(?P<reg1>\w+),(?P<imm>[0-9a-fA-F-]+)\((?P<reg2>\w+)\)")
-
+ECALL_RE = re.compile(r"^\s*(?P<time>\d+)\s+(?P<cycle>\d+)\s+(?P<pc>[0-9a-f]+)\s+(?P<bin>[0-9a-f]+)\s+ecall")
 
 def _process_core_sim_log_fd(log_fd, csv_fd, full_trace=True):
     """Process core simulation log.
@@ -57,6 +57,16 @@ def _process_core_sim_log_fd(log_fd, csv_fd, full_trace=True):
 
     for line in log_fd:
         if re.search("ecall", line):
+            instr_cnt += 1
+            # Extract instruction information
+            m = ECALL_RE.search(line)
+            if m:
+                # Write the extracted instruction to a csvcol buffer file
+                trace_entry = RiscvInstructionTraceEntry()
+                trace_entry.instr_str = "ecall"
+                trace_entry.pc = m.group("pc")
+                trace_entry.binary = m.group("bin")
+                trace_csv.write_trace_entry(trace_entry)
             break
 
         # Extract instruction information
