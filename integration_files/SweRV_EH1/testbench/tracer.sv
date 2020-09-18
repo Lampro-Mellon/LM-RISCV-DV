@@ -476,8 +476,8 @@ logic [31:0] rvfi_pc_wdata;
   function automatic void decode_i_jalr_insn(input string mnemonic);
     // JALR
     data_accessed = RS1 | RD;
-    decoded_str = $sformatf("%s\tx%0d,%0d(x%0d)", mnemonic, rvfi_rd_addr,
-        $signed({{20 {rvfi_insn[31]}}, rvfi_insn[31:20]}), rvfi_rs1_addr);
+    decoded_str = $sformatf("%s\tx%0d,x%0d,%0d", mnemonic, rvfi_rd_addr, rvfi_rs1_addr,
+        $signed({{20 {rvfi_insn[31]}}, rvfi_insn[31:20]}));
   endfunction
 
   function automatic void decode_u_insn(input string mnemonic);
