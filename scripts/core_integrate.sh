@@ -74,6 +74,8 @@ rm "${RV_DV}/scripts/gen_csr_test.py";
 rm "${RV_DV}/yaml/csr_template.yaml";
 
 cp "${INTEGRATION_FILES}/lm_run.py" "${RV_DV}/";
+cp "${INTEGRATION_FILES}/riscv_dv/lm_cov.py" "${RV_DV}/";
 cp "${INTEGRATION_FILES}/riscv_dv/src/riscv_instr_gen_config.sv" "${RV_DV}/src/";
 cp "${INTEGRATION_FILES}/riscv_dv/scripts/gen_csr_test.py" "${RV_DV}/scripts/";
+cp "${INTEGRATION_FILES}/riscv_dv/scripts/spike_log_to_trace_csv.py" "${RV_DV}/scripts/";
 cp "${INTEGRATION_FILES}/riscv_dv/yaml/csr_template.yaml" "${RV_DV}/yaml/";

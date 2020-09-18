@@ -400,3 +400,26 @@ cov_urg_all:
 # Generate urg report for a specific seed
 cov_urg_test:
 	urg -lca -dir "./$(OUT-SEED)/rtl_sim/test.vdb" -report "tests_cov/$(TEST)/$(SEED)/"
+
+# Generate RISCV-DV functional coverage for core and iss
+fcov: fcov_sim fcov_core
+
+# Generate RISCV-DV functional coverage for core
+fcov_core:
+	$(verb)python3 ${GEN_DIR}/lm_cov.py \
+          --core swerv_eh1 \
+          --dir ${OUT-SEED}/rtl_sim \
+          -o ${OUT-SEED}/fcov/fcov_core \
+          --isa ${ISA} \
+          --custom_target riscv_dv_extension
+	urg -lca -dir "./$(OUT-SEED)/fcov/fcov_core/test.vdb" -report "./$(OUT-SEED)/fcov/fcov_core/cov_report"
+
+# Generate RISCV-DV functional coverage for spike log for specific seed
+fcov_sim:
+	$(verb)python3 ${GEN_DIR}/lm_cov.py \
+          --iss spike \
+          --dir ${OUT-SEED}/instr_gen/spike_sim \
+          -o ${OUT-SEED}/fcov/fcov_sim \
+          --isa ${ISA} \
+          --custom_target riscv_dv_extension
+	urg -lca -dir "./$(OUT-SEED)/fcov/fcov_sim/test.vdb" -report "./$(OUT-SEED)/fcov/fcov_sim/cov_report"
