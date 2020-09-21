@@ -583,7 +583,7 @@ logic [31:0] rvfi_pc_wdata;
     logic [5:0] shamt;
     shamt = {rvfi_insn[12], rvfi_insn[6:2]};
     data_accessed = RS1 | RD;
-    decoded_str = $sformatf("%s\tx%0d,0x%0x", mnemonic, rvfi_rs1_addr, shamt);
+    decoded_str = $sformatf("%s\tx%0d,0x%0x", mnemonic, rvfi_rd_addr, shamt);
   endfunction
 
   function automatic void decode_cb_insn(input string mnemonic);
@@ -785,21 +785,23 @@ int i=0;
 			  insn_is_compressed = 1;
 			  // Separate case to avoid overlapping decoding
 			  if (rvfi_insn[15:13] == 3'b100 && rvfi_insn[1:0] == 2'b10) begin
-				if (rvfi_insn[12]) begin
-				  if (rvfi_insn[11:2] == 10'h0) begin
-				    decode_mnemonic("c.ebreak");
-				  end else if (rvfi_insn[6:2] == 5'b0) begin
-				    decode_cr_insn("c.jalr");
-				  end else begin
-				    decode_cr_insn("c.add");
-				  end
-				end else begin
-				  if (rvfi_insn[6:2] == 5'h0) begin
-				    decode_cr_insn("c.jr");
-				  end else begin
-				    decode_cr_insn("c.mv");
-				  end
-				end
+          rvfi_rs1_addr = rvfi_insn[11:7];
+          rvfi_rs2_addr = rvfi_insn[6:2];
+          if (rvfi_insn[12]) begin 
+            if (rvfi_insn[11:2] == 10'h0) begin
+              decode_mnemonic("c.ebreak");
+            end else if (rvfi_insn[6:2] == 5'b0) begin
+              decode_cr_insn("c.jalr");
+            end else begin
+              decode_cr_insn("c.add");
+            end
+          end else begin
+            if (rvfi_insn[6:2] == 5'h0) begin
+              decode_cr_insn("c.jr");
+            end else begin
+              decode_cr_insn("c.mv");
+            end
+          end
 			  end else begin
 				unique casez (rvfi_insn[15:0])
 				  // C0 Opcodes
@@ -811,9 +813,15 @@ int i=0;
 				      decode_ciw_insn("c.addi4spn");
 				    end
 				  end
-				  INSN_CLW:        decode_compressed_load_insn("c.lw");
-				  INSN_CSW:        decode_compressed_store_insn("c.sw");
-				  // C1 Opcodes
+				  INSN_CLW: begin
+            rvfi_rs2_addr = 8 + rvfi_insn[4:2];
+            decode_compressed_load_insn("c.lw");
+          end
+          INSN_CSW: begin
+            rvfi_rs2_addr = 8 + rvfi_insn[4:2];
+            decode_compressed_store_insn("c.sw");
+          end
+          // C1 Opcodes
 				  INSN_CADDI:      decode_ci_caddi_insn("c.addi");
 				  INSN_CJAL:       decode_cj_insn("c.jal");
 				  INSN_CJ:         decode_cj_insn("c.j");
@@ -829,20 +837,39 @@ int i=0;
 				  INSN_CSRLI:      decode_cb_sr_insn("c.srli");
 				  INSN_CSRAI:      decode_cb_sr_insn("c.srai");
 				  INSN_CANDI:      decode_cb_insn("c.andi");
-				  INSN_CSUB:       decode_cs_insn("c.sub");
-				  INSN_CXOR:       decode_cs_insn("c.xor");
-				  INSN_COR:        decode_cs_insn("c.or");
-				  INSN_CAND:       decode_cs_insn("c.and");
+				  INSN_CSUB: begin
+            rvfi_rs2_addr = 8 + rvfi_insn[4:2];
+            decode_cs_insn("c.sub");
+          end
+				  INSN_CXOR: begin
+            rvfi_rs2_addr = 8 + rvfi_insn[4:2];
+            decode_cs_insn("c.xor");
+          end
+          INSN_COR: begin
+            rvfi_rs2_addr = 8 + rvfi_insn[4:2];
+            decode_cs_insn("c.or");
+          end
+          INSN_CAND: begin
+            rvfi_rs2_addr = 8 + rvfi_insn[4:2];
+            decode_cs_insn("c.and");
+          end
 				  INSN_CBEQZ:      decode_cb_insn("c.beqz");
 				  INSN_CBNEZ:      decode_cb_insn("c.bnez");
 				  // C2 Opcodes
 				  INSN_CSLLI:      decode_ci_cslli_insn("c.slli");
 				  INSN_CLWSP:      decode_compressed_load_insn("c.lwsp");
-				  INSN_SWSP:       decode_compressed_store_insn("c.swsp");
+				  INSN_SWSP: begin      
+            rvfi_rs2_addr = rvfi_insn[6:2];    
+            decode_compressed_store_insn("c.swsp");
+          end
 				  default:         decode_mnemonic("INVALID");
 				endcase
 			  end
-			end else begin
+			end else begin  /////////////////////   32-Bit INSTRUCTIONS ////////////////////////
+
+      rvfi_rs1_addr = rvfi_insn[19:15];
+			rvfi_rs2_addr = rvfi_insn[24:20];
+
 			  unique casez (rvfi_insn)
 				// Regular opcodes
 				INSN_LUI:        decode_u_insn("lui");
