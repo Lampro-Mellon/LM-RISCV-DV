@@ -30,7 +30,7 @@ privileged_mode_t supported_privileged_mode[] = {MACHINE_MODE};
 riscv_instr_name_t unsupported_instr[];
 
 // ISA supported by the processor
-riscv_instr_group_t supported_isa[$] = {RV32I, RV32M};      //To do (Amna): Add RV32C after fixing post compare for RV32C
+riscv_instr_group_t supported_isa[$] = {RV32I, RV32M, RV32C};      //To do (Amna): Add RV32C after fixing post compare for RV32C
 
 // Interrupt mode support
 mtvec_mode_t supported_interrupt_mode[$] = {DIRECT, VECTORED};
