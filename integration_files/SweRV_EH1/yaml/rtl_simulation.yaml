@@ -27,6 +27,7 @@
       -debug_access+all -ucli -do vcs.tcl
     cov_opts: >
       -cm line+tgl+branch
+      -cm_hier cover.cfg
       -cm_dir <out>/test.vdb
       
   sim:
