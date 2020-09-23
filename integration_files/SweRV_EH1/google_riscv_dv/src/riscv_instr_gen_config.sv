@@ -101,6 +101,7 @@ class riscv_instr_gen_config extends uvm_object;
   // processor.
   bit                    check_misa_init_val = 1'b0;
   bit                    check_xstatus = 1'b1;
+  bit			 gen_exceptions = 0;
 
   // Virtual address translation is on for this test
   rand bit               virtual_addr_translation_on;
@@ -485,6 +486,7 @@ class riscv_instr_gen_config extends uvm_object;
     `uvm_field_int(enable_page_table_exception, UVM_DEFAULT)
     `uvm_field_int(no_directed_instr, UVM_DEFAULT)
     `uvm_field_int(enable_interrupt, UVM_DEFAULT)
+    `uvm_field_int(gen_exceptions, UVM_DEFAULT)
     `uvm_field_int(enable_timer_irq, UVM_DEFAULT)
     `uvm_field_int(bare_program_mode, UVM_DEFAULT)
     `uvm_field_int(enable_illegal_csr_instruction, UVM_DEFAULT)
@@ -536,6 +538,7 @@ class riscv_instr_gen_config extends uvm_object;
     get_bool_arg_value("+no_dret=", no_dret);
     get_bool_arg_value("+no_wfi=", no_wfi);
     get_bool_arg_value("+no_branch_jump=", no_branch_jump);
+    get_bool_arg_value("+gen_exceptions=", gen_exceptions);
     get_bool_arg_value("+no_load_store=", no_load_store);
     get_bool_arg_value("+no_csr_instr=", no_csr_instr);
     get_bool_arg_value("+fix_sp=", fix_sp);
