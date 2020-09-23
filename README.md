@@ -1,6 +1,6 @@
 # Overview
 
-LM RISC-V DV is a verfication environment based on the verification environment of [ibex](ibex) core from lowRISC. This environment integrates a random assembly test generator from Google's RISCV-DV. This work is currently in progress. At present it supports:
+LM RISC-V DV is a verification environment based on the verification environment of [ibex](ibex) core from lowRISC. This environment integrates a random assembly test generator from Google's RISCV-DV. This work is currently in progress. At present it supports:
 
 - RTL Compilation
 - Random Assembly Test Generation
@@ -18,34 +18,48 @@ LM RISC-V DV is a verfication environment based on the verification environment 
 ├── google_riscv_dv
 ├── integrated_cores
 ├── integration_files
+│   └── SweRV_EH1
+│       ├── directed_tests
+│       ├── google_riscv_dv
+│       ├── riscv_dv_extension
+│       ├── snapshots
+│       ├── testbench
+│       ├── yaml
+│       ├── cover.cfg
+│       ├── Makefile
+│       ├── sim.py
+│       ├── SweRV_EH1_flist.f
+│       └── vcs.tcl
 └── scripts
+    ├── core_integrate.sh
+    └── toolchain_paths.sh
 ```
 
 ### [cores](./cores)/
 
-This directory is a place holder which will contain the cores in their original source forms cloned from their sites. Currently, LM RISC-V DV has been setup and tested for SweRV EH-1 core from Western Digital. When the cores are cloned, they will be checked out to the most recent versions which have been tested in this environment.  
+This directory is a place holder which will contain the cores in their original source forms cloned from their sites. Currently, LM RISC-V DV has been set up and tested for SweRV EH-1 core from Western Digital. When the cores are cloned, they will be checked out to the most recent versions which have been tested in this environment.  
 
 ### [docs](./docs)/
 
-This directory is dedicated for all the documentation related to directory structure and environment flow. It also contains documentation for tests which are generated for a specific core.
+This directory is dedicated to all the documentation related to directory structure and environment flow. It also contains documentation for tests which are generated for a specific core.
 
 ### [google_riscv_dv](./google_riscv_dv)/
 
-Google's RISC-V DV is cloned from  into this repository. It contains the source for random assembly test generator written in SystemVerilog/UVM.
+Google's RISC-V DV is cloned into this repository. It contains the source for random assembly test generator written in SystemVerilog/UVM.
 
 ### [integrated_cores](./integrated_cores)/
 
-After the cores and Google's RISC-V DV are cloned into their respective directories, the verification environemnt for the cores will be set up here with each core in its seperate directory.
+After the cores and Google's RISC-V DV are cloned into their respective directories, the verification environment for the cores will be set up here with each core in its separate directory.
 
 ### [integration files](./integration_files)/
 
 This directory contains files which will be used in setting up the verification environment. It contains:
 
-- Makefiles, python scripts, yaml files, linker files and core configuartion files
+- Makefiles, python scripts, YAML files, linker files, and core configuration files
 - Modified Google's RISC-V DV Files specific for cores
 - Modified RTL and Testbench files related to cores
 
-### scripts/
+### [scripts](./scripts)/
 
 All the scripts for setting up the repository and core integration will be placed in this directory. At present, it contains two scripts.
 
@@ -54,10 +68,10 @@ All the scripts for setting up the repository and core integration will be place
 
 ## Pre-Requisites
 
-Following are the requirements for running the test generator and environemnt.
+Following are the requirements for running the test generator and environment.
 
 - RISC-V GNU Toolchain
-- Instruction Set Simulator or ISS (e.g. Spike, OVPsim etc)
+- Instruction Set Simulator ISS (Spike)
 - Python 3
 - SV and UVM 1.2 Simulator
 
@@ -65,7 +79,7 @@ For manually building the `RISC-V GNU Toolchain`, visit the [riscv-gnu-toolchain
 
 ## Setup
 
-After the `RISC-V GNU toolchain` and `Spike` (or any other RISC-V ISS) are installed, their installation paths should be added to `~/.bashrc` file in `RISCV_PATH` and `SPIKE_PATH` (or path variable corresponding to installed ISS) variables respectively. Following is the sample of paths to be added on a ubuntu OS.
+After the `RISC-V GNU toolchain` and `Spike` (or any other RISC-V ISS) are installed, their installation paths should be added to the `~/.bashrc` file in `RISCV_PATH` and `SPIKE_PATH` (or path variable corresponding to installed ISS) variables respectively. Following is the sample of paths to be added on a ubuntu OS.
 
 ```bash
 export RISCV_PATH = <path to>/riscv64-unknown-elf-gcc-8.3.0-2019.08.0-x86_64-linux-ubuntu14
