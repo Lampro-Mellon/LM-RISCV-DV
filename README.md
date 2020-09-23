@@ -105,3 +105,7 @@ Currently, only SweRV EH-1 has been integrated. It will thus set up the environm
 ## Contribution
 
 This is a work in progress. We'd like to accept your contributions to this project.
+
+## Contact
+
+If you have any queries, feel free to contact us via [Contact](http://www.lampromellon.com/contact-us.php) page on [Lampro Mellon](http://www.lampromellon.com)
