@@ -27,7 +27,7 @@ SECTIONS {
   .kernel_data : { *(.kernel_data) } 
   .kernel_stack : { *(.kernel_stack) } 
   _end = .;
-  . = 0x8000fff8;
+  . = 0xfffffff8;
   .data.ctl : { LONG(0xf0040000); LONG(STACK) }
 	. = 0xf0040000;
   .data  :  { *(.data) *(.region_0) *(.region_1) STACK = ALIGN(16) + 0x8000;}
