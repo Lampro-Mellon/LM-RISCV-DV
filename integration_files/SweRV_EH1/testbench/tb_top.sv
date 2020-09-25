@@ -367,7 +367,7 @@ module tb_top;
 	nmi_vector   = 32'h11110000;
         nmi_int   = 0;
 
-        $readmemh("program.hex",  lmem.mem);
+        $readmemh("data.hex",  lmem.mem);
         $readmemh("program.hex",  imem.mem);
         tp = $fopen("trace_port.csv","w");
         el = $fopen("exec.log","w");
