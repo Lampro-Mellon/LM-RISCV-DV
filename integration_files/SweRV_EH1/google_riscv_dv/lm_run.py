@@ -397,11 +397,11 @@ def gcc_compile(test_list, output_dir, isa, mabi, opts, gcc_user_extension_path,
       os.system(cmd)
       
       # Generating Data.hex
-      cmd = ('%s -O verilog --only-section ".data*" --change-section-lma .data=0 --change-section-lma .data.ctl=0xfff8 %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, data_hex))
+      cmd = ('%s -O verilog --only-section ".data*" %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, data_hex))
       os.system(cmd)
       
       # Generating Program.hex
-      cmd = ('%s -O verilog --only-section ".text*" --change-section-lma .text=0 %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, program_hex))
+      cmd = ('%s -O verilog --only-section ".text*" %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, program_hex))
       os.system(cmd)
 
 def run_assembly(asm_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
@@ -475,11 +475,11 @@ def run_assembly(asm_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   os.system(cmd)
   
   # Generating Data.hex
-  cmd = ('%s -O verilog --only-section ".data*" --change-section-lma .data=0 --change-section-lma .data.ctl=0xfff8 %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, data_hex))
+  cmd = ('%s -O verilog --only-section ".data*" %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, data_hex))
   os.system(cmd)
   
   # Generating Program.hex
-  cmd = ('%s -O verilog --only-section ".text*" --change-section-lma .text=0 %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, program_hex))
+  cmd = ('%s -O verilog --only-section ".text*" %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, program_hex))
   os.system(cmd)
     
   # TODO (Haroon): Setup spike simulation for directed asm tests
@@ -593,11 +593,11 @@ def run_c(c_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   os.system(cmd)
   
   # Generating Data.hex
-  cmd = ('%s -O verilog --only-section ".data*" --change-section-lma .data=0 --change-section-lma .data.ctl=0xfff8 %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, data_hex))
+  cmd = ('%s -O verilog --only-section ".data*" %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, data_hex))
   os.system(cmd)
   
   # Generating Program.hex
-  cmd = ('%s -O verilog --only-section ".text*" --change-section-lma .text=0 %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, program_hex))
+  cmd = ('%s -O verilog --only-section ".text*" %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, program_hex))
   os.system(cmd)
   
   # TODO (Haroon): Setup spike simulation for directed c tests

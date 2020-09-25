@@ -303,18 +303,7 @@ def cp_compiled_test(test, bin_dir, idx):
 		program_hex = os.path.join(bin_dir, 'program_{}_{}.hex'.format(test_name, idx))
 		data_hex 	= os.path.join(bin_dir, 'data_{}_{}.hex'.format(test_name, idx))
 
-	# Modifying program.hex and data.hex starting address
-	# location to fit smaller testbench memory
-	update ='@0000'
-	with open(program_hex,'r+') as f:
-		f.seek(0)
-		f.write(update)
-  
-	update ='@0000'
-	with open(data_hex,'r+') as f:
-		f.seek(0)
-		f.write(update)
-    
+   
 	# Delete compiled tests if present in current working directory    
 	rm_cmd 	= "rm -f program.hex program.bin data.hex"
 	os.system(rm_cmd)
