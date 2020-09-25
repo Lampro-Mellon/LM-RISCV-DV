@@ -8,7 +8,7 @@ RV_DV_REMOTE='https://github.com/google/riscv-dv.git'
 RV_DV_COMMIT_SHA='67148f58ab4c73b2039b2d0880535525fd7a76a7'
 
 SWERV_REMOTE='https://github.com/chipsalliance/Cores-SweRV.git'
-SWERV_COMMIT_SHA='77332edc0adaa7e9a0c842d169154429e8d987786'
+SWERV_COMMIT_SHA='7332edc0adaa7e9a0c842d169154429e8d987786'
 
 CORES="${BASE_DIR}/cores"
 INTEGRATED_CORES="${BASE_DIR}/integrated_cores"
