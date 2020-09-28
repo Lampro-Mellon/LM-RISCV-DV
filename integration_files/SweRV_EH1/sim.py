@@ -251,7 +251,6 @@ def get_test_sim_cmd(base_cmd, test, idx, output_dir, bin_dir, lsf_cmd):
 
     binary 		= os.path.join(_CORE, 'program.bin')
     program_hex = os.path.join(_CORE, 'program.hex')
-    data_hex 	= os.path.join(_CORE, 'data.hex')
 
     desc = '{} with {}'.format(test['rtl_test'], binary)
 
@@ -292,16 +291,13 @@ def cp_compiled_test(test, bin_dir, idx):
 		bin_dir		= bin_dir.replace("asm_tests", "directed_c_tests")
 		binary 		= os.path.join(bin_dir, '{}.bin'.format(test_name))
 		program_hex = os.path.join(bin_dir, 'program_{}.hex'.format(test_name))
-		data_hex 	= os.path.join(bin_dir, 'data_{}.hex'.format(test_name))
 	elif "asm_tests" in test.keys():
 		bin_dir		= bin_dir.replace("asm_tests", "directed_asm_tests")
 		binary 		= os.path.join(bin_dir, '{}.bin'.format(test_name))
 		program_hex = os.path.join(bin_dir, 'program_{}.hex'.format(test_name))
-		data_hex 	= os.path.join(bin_dir, 'data_{}.hex'.format(test_name))
 	else:
 		binary 		= os.path.join(bin_dir, '{}_{}.bin'.format(test_name, idx))
 		program_hex = os.path.join(bin_dir, 'program_{}_{}.hex'.format(test_name, idx))
-		data_hex 	= os.path.join(bin_dir, 'data_{}_{}.hex'.format(test_name, idx))
 
    
 	# Delete compiled tests if present in current working directory    
@@ -313,8 +309,6 @@ def cp_compiled_test(test, bin_dir, idx):
 	os.system(cp_binary_cmd)
 	cp_program_hex_cmd 	= "cp %s %s/program.hex" % (program_hex, _CORE)
 	os.system(cp_program_hex_cmd)
-	cp_data_hex_cmd 	= "cp %s %s/data.hex" % (data_hex, _CORE)
-	os.system(cp_data_hex_cmd)
 
 
 def run_sim_commands(command_list, test, bin_dir, use_lsf):

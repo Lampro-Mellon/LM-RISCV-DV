@@ -359,7 +359,6 @@ def gcc_compile(test_list, output_dir, isa, mabi, opts, gcc_user_extension_path,
       binary = prefix + ".bin"
       dump = prefix + ".dump"
       program_hex = ("%s/asm_tests/program_%s_%d.hex" % (output_dir, test['test'], i))
-      data_hex = ("%s/asm_tests/data_%s_%d.hex" % (output_dir, test['test'], i))
       test_isa = isa
       if not os.path.isfile(asm) and not debug_cmd:
         logging.error("Cannot find assembly test: %s\n", asm)
@@ -396,12 +395,8 @@ def gcc_compile(test_list, output_dir, isa, mabi, opts, gcc_user_extension_path,
       cmd = ('%s --disassemble-all --disassemble-zeroes -M no-aliases --section=.text --section=.data %s > %s' % (get_env_var("RISCV_OBJDUMP", debug_cmd = debug_cmd), elf, dump))
       os.system(cmd)
       
-      # Generating Data.hex
-      cmd = ('%s -O verilog --only-section ".data*" %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, data_hex))
-      os.system(cmd)
-      
       # Generating Program.hex
-      cmd = ('%s -O verilog --only-section ".text*" %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, program_hex))
+      cmd = ('%s -O verilog %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, program_hex))
       os.system(cmd)
 
 def run_assembly(asm_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
@@ -440,7 +435,6 @@ def run_assembly(asm_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   binary = prefix + ".bin"
   dump = prefix + ".dump"
   program_hex = ("%s/directed_asm_tests/program_%s.hex"  % (output_dir, asm))
-  data_hex = ("%s/directed_asm_tests/data_%s.hex"  % (output_dir, asm))
   # TODO (Haroon): Enable it after setting up spike simulation for directed asm tests
   # iss_list = iss_opts.split(",")
   run_cmd("mkdir -p %s/directed_asm_tests" % output_dir)
@@ -473,13 +467,9 @@ def run_assembly(asm_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   # Generating disassembly dump
   cmd = ('%s --disassemble-all --disassemble-zeroes -M no-aliases --section=.text --section=.data %s > %s' % (get_env_var("RISCV_OBJDUMP", debug_cmd = debug_cmd), elf, dump))
   os.system(cmd)
-  
-  # Generating Data.hex
-  cmd = ('%s -O verilog --only-section ".data*" %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, data_hex))
-  os.system(cmd)
-  
+    
   # Generating Program.hex
-  cmd = ('%s -O verilog --only-section ".text*" %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, program_hex))
+  cmd = ('%s -O verilog %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, program_hex))
   os.system(cmd)
     
   # TODO (Haroon): Setup spike simulation for directed asm tests
@@ -567,7 +557,6 @@ def run_c(c_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   exe = prefix + ".exe"
   dump = prefix + ".dump"
   program_hex = ("%s/directed_c_tests/program_%s.hex"  % (output_dir, c))
-  data_hex = ("%s/directed_c_tests/data_%s.hex"  % (output_dir, c))
   # TODO (Haroon): Enable it after setting up spike simulation for directed c tests
   # iss_list = iss_opts.split(",")
   run_cmd("mkdir -p %s/directed_c_tests" % output_dir)
@@ -591,13 +580,9 @@ def run_c(c_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   # Generating disassembly dump
   cmd = ('%s --disassemble-all --disassemble-zeroes -M no-aliases --section=.text --section=.data %s > %s' % (get_env_var("RISCV_OBJDUMP", debug_cmd = debug_cmd), elf, dump))
   os.system(cmd)
-  
-  # Generating Data.hex
-  cmd = ('%s -O verilog --only-section ".data*" %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, data_hex))
-  os.system(cmd)
-  
+    
   # Generating Program.hex
-  cmd = ('%s -O verilog --only-section ".text*" %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, program_hex))
+  cmd = ('%s -O verilog %s %s' % (get_env_var("RISCV_OBJCOPY", debug_cmd = debug_cmd), exe, program_hex))
   os.system(cmd)
   
   # TODO (Haroon): Setup spike simulation for directed c tests
