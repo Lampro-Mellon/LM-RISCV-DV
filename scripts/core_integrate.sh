@@ -30,10 +30,15 @@ else
     RV_DV_SHA_OUTPUT="-1"
 fi
 
-if [ ${RV_DV_SHA_OUTPUT} != ${RV_DV_COMMIT_SHA} ]
+if [ ${RV_DV_SHA_OUTPUT} != "-1" ]
 then 
     git clone ${RV_DV_REMOTE} ${RV_DV}
     cd ${RV_DV}
+    git checkout ${RV_DV_COMMIT_SHA}
+elif [ ${RV_DV_SHA_OUTPUT} != ${RV_DV_COMMIT_SHA} ]
+then 
+    cd ${RV_DV}
+    git pull ${RV_DV_REMOTE}
     git checkout ${RV_DV_COMMIT_SHA}
 else
     printf "HEAD of ${RV_DV} is already at ${RV_DV_COMMIT_SHA}! \n\n"
@@ -52,10 +57,15 @@ else
     SWERV_SHA_OUTPUT="-1"
 fi
 
-if [ ${SWERV_SHA_OUTPUT} != ${SWERV_COMMIT_SHA} ]
+if [ ${SWERV_SHA_OUTPUT} == "-1" ]
 then 
     git clone ${SWERV_REMOTE} ${SWERV_LOCAL};
     cd ${SWERV_LOCAL};
+    git checkout ${SWERV_COMMIT_SHA};
+elif [ ${SWERV_SHA_OUTPUT} != ${SWERV_COMMIT_SHA} ]
+then 
+    cd ${SWERV_LOCAL};
+    git pull ${SWERV_REMOTE}
     git checkout ${SWERV_COMMIT_SHA};
 else
     printf "HEAD of ${SWERV_LOCAL} is already at ${SWERV_COMMIT_SHA}! \n\n"
