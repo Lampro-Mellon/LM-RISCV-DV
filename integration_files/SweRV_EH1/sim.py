@@ -409,6 +409,7 @@ def compare_test_run(test, idx, iss, output_dir, report):
     Returns True if the test run passed and False otherwise.
 
     '''
+    # TODO [Haroon]: Support directed asm and directed_c tests post-sim comparison
     test_name = test['test']
     elf = os.path.join(output_dir,
                        'instr_gen/asm_tests/{}.{}.o'.format(test_name, idx))
@@ -478,7 +479,7 @@ def compare_test_run(test, idx, iss, output_dir, report):
         return False
 
     compare_result = \
-        compare_trace_csv(rtl_csv, iss_csv, "core", iss, report,
+        compare_trace_csv(iss_csv, rtl_csv, iss, "core", report,
                           **test.get('compare_opts', {}))
 
     # Rather oddly, compare_result is a string. The comparison passed if it
