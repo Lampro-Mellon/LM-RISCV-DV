@@ -6,9 +6,14 @@ LM RISC-V DV is a verification environment based on the verification environment
 - Random Assembly Test Generation
 - Test Compilation (Random, Directed)
 - RTL Simulation
-- ISS Simulation
+- Spike ISS Simulation
 - Post Comparison with ISS (Spike)
 - URG Coverage Report Generation
+- Extraction of Functional Coverage
+
+You can watch a video on youtube about the introduction of LM RISC-V DV.
+
+[<img alt="LM RISC-V DV Thumbnail" src="docs/img/thumbnail.png" width=341 height=192>](https://www.youtube.com/watch?v=iM_I6MXjWts)
 
 ## Directory Structure
 
