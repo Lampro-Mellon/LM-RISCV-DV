@@ -1,5 +1,8 @@
 def nb_post_fix(rtl_log_f,rtl_log,nb_log):
-
+    ''' Replaces non-blocking load results in rd of trace log.
+    Sees time/CycleCnt at which non-block load is written back to gpr,
+    checks from that time/CycleCnt backwards, where this gpr was written in trace log,
+    replaces the result in rd (also load) at that instruction'''
     nb_file = open(nb_log,"r")
     load_lines = nb_file.readlines()
     #read whole file
