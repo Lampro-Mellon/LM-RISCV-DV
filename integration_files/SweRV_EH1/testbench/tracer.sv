@@ -88,10 +88,16 @@ logic [31:0] rvfi_rd_wdata;
 logic [31:0] rvfi_pc_rdata;
 logic [31:0] rvfi_pc_wdata;
 
+//nonblock load trace signals
+logic                       nb_valid;
+logic [4:0]                 nb_addr;
+logic [31:0]                nb_data;
+
   import tracer_pkg::*;
 
-  int          file_handle;
+  int          file_handle,file_handle_nb;
   string       file_name;
+  string       file_name_nb;
 
   int unsigned cycle;
   string       decoded_str;
@@ -104,6 +110,22 @@ logic [31:0] rvfi_pc_wdata;
   localparam RD  = (1 << 3);
   localparam MEM = (1 << 4);
   logic [4:0] data_accessed;
+
+  function automatic void print_nb_dump();
+    if (file_handle_nb == 32'h0) begin
+      string file_name_base = "trace_core";
+      $value$plusargs("tracer_file_base=%s", file_name_base);      
+      $sformat(file_name_nb, "%s_%s.log", file_name_base,"nb_load");
+      $display("%m: Writing nonblock load trace to %s", file_name_nb);
+      //writing to nonblock load file 
+      file_handle_nb = $fopen(file_name_nb,"w");
+      $fwrite (file_handle_nb, "//\t Time \t Cycle \t gpr \t load_data\n");
+    end
+    //Write nonblock load log
+    if(nb_valid) begin
+      $fwrite (file_handle_nb, "%15t\t%d\tx%0d\t%h\t\n", $time, cycle, nb_addr, nb_data);
+    end
+  endfunction
 
   function automatic void printbuffer_dumpline();
     string rvfi_insn_str;
@@ -753,12 +775,22 @@ logic [31:0] rvfi_pc_wdata;
     if (file_handle != 32'h0) begin
       $fclose(file_handle);
     end
+    if (file_handle_nb != 32'h0) begin
+      $fclose(file_handle_nb);
+    end
   end
 int i=0;
 
   // log execution
   ///////////////////////////////////////////////////////////////////////
   always @(posedge clk_i) begin
+
+    //nonblock load trace
+    nb_valid <= rvtop.swerv.dec.dec_nonblock_load_wen;
+    nb_addr  <= rvtop.swerv.dec.dec_nonblock_load_waddr;
+    nb_data  <= rvtop.swerv.dec.lsu_nonblock_load_data;
+
+    //RVFI Trace
   	for(int i=0; i<2; i++) begin
 		if (rvfi_valid[i]) begin
 			rvfi_insn = rvfi_insn_t[31+i*32 -:32]; 
@@ -981,6 +1013,7 @@ int i=0;
 			printbuffer_dumpline();		
 		 end
 	end	
+  print_nb_dump();
 		    i =0;
   end	
 
