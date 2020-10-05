@@ -122,3 +122,4 @@
   rtl_test: core_base_test
   sim_opts: >
     +enable_irq_seq=1
+  no_post_compare: 1

@@ -41,6 +41,7 @@ try:
     from spike_log_to_trace_csv import process_spike_sim_log
     from ovpsim_log_to_trace_csv import process_ovpsim_sim_log
     from instr_trace_compare import compare_trace_csv
+    from nb_postfix import nb_post_fix
 
     from core_log_to_trace_csv import process_core_sim_log, check_core_uvm_log
 
@@ -421,9 +422,10 @@ def compare_test_run(test, idx, iss, output_dir, report):
 
     rtl_dir = os.path.join(output_dir, 'rtl_sim',
                            '{}.{}'.format(test_name, idx))
-		#TODO function to copy trace_port.csv and exec.log in output_dir
-		#TODO get core log and csv in appropriate formatting for matching
+
+    nb_log = os.path.join(rtl_dir, 'trace_core_nb_load.log')
     rtl_log = os.path.join(rtl_dir, 'trace_core_00000000.log')
+    rtl_log_f = os.path.join(rtl_dir, 'trace_core.log')
     rtl_csv = os.path.join(rtl_dir, 'trace_core_00000000.csv')
     uvm_log = os.path.join(rtl_dir, 'sim.log')
 
@@ -433,8 +435,17 @@ def compare_test_run(test, idx, iss, output_dir, report):
         return False
 
     try:
+        # Fix RTL log file with non blocking load values
+        nb_post_fix(rtl_log_f, rtl_log, nb_log)
+    except RuntimeError as e:
+        with open(report, 'a') as report_fd:
+            report_fd.write('Post-fixing of Log failed: {}\n'.format(e))
+
+        return False
+
+    try:
         # Convert the RTL log file to a trace CSV.
-        process_core_sim_log(rtl_log, rtl_csv, 1)
+        process_core_sim_log(rtl_log_f, rtl_csv, 1)
     except RuntimeError as e:
         with open(report, 'a') as report_fd:
             report_fd.write('Log processing failed: {}\n'.format(e))
