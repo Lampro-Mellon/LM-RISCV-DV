@@ -50,6 +50,7 @@ class riscv_asm_program_gen extends uvm_object;
    riscv_page_table_list#(SATP_MODE)   page_table_list;
    int                                 hart;
    bit excep;
+
   `uvm_object_utils(riscv_asm_program_gen)
 
   function new (string name = "");
@@ -93,7 +94,9 @@ class riscv_asm_program_gen extends uvm_object;
         gen_load_misaligned_handler(hart);
         // Store adress misaligned handler
         gen_store_misaligned_handler(hart);
-        gen_test_done();
+        if (hart == 0) begin
+          gen_test_done();
+        end
       end
       // Generate sub program
       gen_sub_program(hart, sub_program[hart], sub_program_name, cfg.num_of_sub_program);
@@ -151,7 +154,7 @@ class riscv_asm_program_gen extends uvm_object;
 			instr_stream = {instr_stream, $sformatf("%scsrr x27, 0x7D2", indent)};
 			instr_stream = {instr_stream, $sformatf("%scsrr x24, 0x7D5", indent)};
 			instr_stream = {instr_stream, $sformatf("%scsrr x17, mcause", indent)};
-			instr_stream = {instr_stream, $sformatf("%sbnez x18, subtr_one", indent)};
+			instr_stream = {instr_stream, $sformatf("%sbnez x18, subtr_one", indent)}; 
 
 
 			instr_stream = {instr_stream, $sformatf("%s.4byte 0x11c3f2d3 # kIllegalOpcode", indent)};
@@ -162,16 +165,20 @@ class riscv_asm_program_gen extends uvm_object;
    			instr_stream = {instr_stream, $sformatf("%slw x5, 2(x4) #misaligned load access", indent)};
    			instr_stream = {instr_stream, $sformatf("%slw x9, 0(x4)", indent)};
 			instr_stream = {instr_stream, $sformatf("%sadd x0, x0, x0", indent)};
-   			instr_stream = {instr_stream, $sformatf("%sli x8, 0xf003fff0", indent)};
-   			instr_stream = {instr_stream, $sformatf("%ssw x4, 0(x8)  #store access fault", indent)};
-   			instr_stream = {instr_stream, $sformatf("%ssw x4, 60(x8)", indent)};
-   			instr_stream = {instr_stream, $sformatf("%slw x5, 0(x8) #load access fault", indent)};
-   			instr_stream = {instr_stream, $sformatf("%slw x9, 60(x8)", indent)};
-			instr_stream = {instr_stream, $sformatf("%sadd x0, x0, x0", indent)};
+   			instr_stream = {instr_stream, $sformatf("%sli x18, 0xf003fff0", indent)};
+   			instr_stream = {instr_stream, $sformatf("%ssw x4, 0(x18)  #store access fault", indent)};
+   			instr_stream = {instr_stream, $sformatf("%ssw x4, 60(x18)", indent)};
+   			instr_stream = {instr_stream, $sformatf("%slw x5, 0(x18) #load access fault", indent)}; 
+   			/*instr_stream = {instr_stream, $sformatf("%slw x9, 60(x18)", indent)}; */
+			instr_stream = {instr_stream, $sformatf("%sadd x0, x0, x0", indent)}; 
 		  end
+
       // If PMP is supported, need to jump from end of main program to test_done section at the end
       // of main_program, as the test_done will have moved to the beginning of the program
-      instr_stream = {instr_stream, $sformatf("%sj test_done", indent)};
+      instr_stream = {instr_stream,
+                      $sformatf("%sla x%0d, test_done", indent, cfg.scratch_reg),
+                      $sformatf("%sjalr x0, x%0d, 0", indent, cfg.scratch_reg)
+                     };
       // Test done section
       // If PMP isn't supported, generate this in the normal location
       if (hart == 0 & !riscv_instr_pkg::support_pmp) begin
@@ -184,10 +191,6 @@ class riscv_asm_program_gen extends uvm_object;
       // Program end
       gen_program_end(hart);
       if (!cfg.bare_program_mode) begin
-        if (!riscv_instr_pkg::support_pmp) begin
-          // Privileged mode switch routine
-          gen_privileged_mode_switch_routine(hart);
-        end
         // Generate debug rom section
         if (riscv_instr_pkg::support_debug_mode) begin
           gen_debug_rom(hart);
@@ -384,7 +387,8 @@ class riscv_asm_program_gen extends uvm_object;
     end
     gen_section("_start", str);
     for (int hart = 0; hart < cfg.num_of_harts; hart++) begin
-      instr_stream.push_back($sformatf("%0d: j h%0d_start", hart, hart));
+      instr_stream.push_back($sformatf("%0d: la x%0d, h%0d_start", hart, cfg.scratch_reg, hart));
+      instr_stream.push_back($sformatf("jalr x0, x%0d, 0", cfg.scratch_reg));
     end
   endfunction
 
@@ -761,19 +765,19 @@ class riscv_asm_program_gen extends uvm_object;
   // TB can check the GPR value for this memory location to compare with expected value generated
   // by the ISA simulator. If the processor doesn't have a good tracer unit, it might not be
   // possible to compare the GPR value after each instruction execution.
-  virtual function void gen_register_dump();
+  virtual function void gen_register_dump(ref string instr[$]);
     string str;
     // Load base address
-    str = {indent, $sformatf("la x%0d, _start", cfg.gpr[0])};
-    instr_stream.push_back(str);
+    str = $sformatf("la x%0d, _start", cfg.gpr[0]);
+    instr.push_back(str);
     // Generate sw/sd instructions
     for(int i = 0; i < 32; i++) begin
       if(XLEN == 64) begin
-        str = {indent, $sformatf("sd x%0d, %0d(x%0d)", i, i*(XLEN/8), cfg.gpr[0])};
+        str = $sformatf("sd x%0d, %0d(x%0d)", i, i*(XLEN/8), cfg.gpr[0]);
       end else begin
-        str = {indent, $sformatf("sw x%0d, %0d(x%0d)", i, i*(XLEN/8), cfg.gpr[0])};
+        str = $sformatf("sw x%0d, %0d(x%0d)", i, i*(XLEN/8), cfg.gpr[0]);
       end
-      instr_stream.push_back(str);
+      instr.push_back(str);
     end
   endfunction
 
@@ -795,6 +799,8 @@ class riscv_asm_program_gen extends uvm_object;
     trap_vector_init(hart);
     // Setup PMP CSRs
     setup_pmp(hart);
+    // Generate PMPADDR write test sequence
+    gen_pmp_csr_write(hart);
     // Initialize PTE (link page table based on their real physical address)
     if(cfg.virtual_addr_translation_on) begin
       page_table_list.process_page_table(instr);
@@ -802,14 +808,10 @@ class riscv_asm_program_gen extends uvm_object;
     end
     // Setup mepc register, jump to init entry
     setup_epc(hart);
+    // Setup initial privilege mode
+    gen_privileged_mode_switch_routine(hart);
     // Initialization of any implementation-specific custom CSRs
     setup_custom_csrs(hart);
-    // Move privileged mode support to the "safe" section of the program
-    // if PMP is supported
-    if (riscv_instr_pkg::support_pmp) begin
-      // Privileged mode switch routine
-      gen_privileged_mode_switch_routine(hart);
-    end
   endfunction
 
   virtual function void gen_privileged_mode_switch_routine(int hart);
@@ -870,9 +872,6 @@ class riscv_asm_program_gen extends uvm_object;
     end
     mode_name = cfg.init_privileged_mode.name();
     instr.push_back($sformatf("csrw 0x%0x, x%0d", MEPC, cfg.gpr[0]));
-    if (!riscv_instr_pkg::support_pmp) begin
-      instr.push_back($sformatf("j %0sinit_%0s", hart_prefix(hart), mode_name.tolower()));
-    end
     gen_section(get_label("mepc_setup", hart), instr);
   endfunction
 
@@ -883,6 +882,17 @@ class riscv_asm_program_gen extends uvm_object;
       cfg.pmp_cfg.setup_pmp();
       cfg.pmp_cfg.gen_pmp_instr('{cfg.scratch_reg, cfg.gpr[0]}, instr);
       gen_section(get_label("pmp_setup", hart), instr);
+    end
+  endfunction
+
+  // Generates a directed stream of instructions to write random values to all supported
+  // pmpaddr CSRs to test write accessibility.
+  // The original CSR values are restored afterwards.
+  virtual function void gen_pmp_csr_write(int hart);
+    string instr[$];
+    if (riscv_instr_pkg::support_pmp && cfg.pmp_cfg.enable_write_pmp_csr) begin
+      cfg.pmp_cfg.gen_pmp_write_test({cfg.scratch_reg, cfg.pmp_reg}, instr);
+      gen_section(get_label("pmp_csr_write_test", hart), instr);
     end
   endfunction
 
@@ -1114,7 +1124,7 @@ class riscv_asm_program_gen extends uvm_object;
              $sformatf("beq x%0d, x%0d, %0secall_handler",
                        cfg.gpr[0], cfg.gpr[1], hart_prefix(hart)),
              // Page table fault or access fault conditions
-              $sformatf("li x%0d, 0x%0x", cfg.gpr[1], INSTRUCTION_ACCESS_FAULT),
+             $sformatf("li x%0d, 0x%0x", cfg.gpr[1], INSTRUCTION_ACCESS_FAULT),
              $sformatf("beq x%0d, x%0d, %0sinstr_fault_handler",
                        cfg.gpr[0], cfg.gpr[1], hart_prefix(hart)),
              $sformatf("li x%0d, 0x%0x", cfg.gpr[1], LOAD_ACCESS_FAULT),
@@ -1144,7 +1154,9 @@ class riscv_asm_program_gen extends uvm_object;
                        cfg.gpr[0], cfg.gpr[1], hart_prefix(hart)),
              // Skip checking tval for illegal instruction as it's implementation specific
              $sformatf("csrr x%0d, 0x%0x # %0s", cfg.gpr[1], tval, tval.name()),
-             "1: jal x1, test_done "
+             // use JALR to jump to test_done.
+             $sformatf("1: la x%0d, test_done", cfg.scratch_reg),
+             $sformatf("jalr x1, x%0d, 0", cfg.scratch_reg)
            };
     gen_section(get_label($sformatf("%0smode_exception_handler", mode), hart), instr);
   endfunction
@@ -1190,7 +1202,8 @@ class riscv_asm_program_gen extends uvm_object;
       // Jump to commmon interrupt handling routine
       intr_handler = {intr_handler,
                       $sformatf("j %0s%0smode_intr_handler", hart_prefix(hart), mode),
-                      "1: j test_done"};
+                      $sformatf("1: la x%0d, test_done", cfg.scratch_reg),
+                      $sformatf("jalr x0, x%0d, 0", cfg.scratch_reg)};
       gen_section(get_label($sformatf("%0smode_intr_vector_%0d", mode, i), hart), intr_handler);
     end
   endfunction
@@ -1199,14 +1212,12 @@ class riscv_asm_program_gen extends uvm_object;
   // It does some clean up like dump GPRs before communicating with host to terminate the test.
   // User can extend this function if some custom clean up routine is needed.
   virtual function void gen_ecall_handler(int hart);
-    string str;
-    str = format_string(get_label("ecall_handler:", hart), LABEL_STR_LEN);
-    instr_stream.push_back(str);
-    dump_perf_stats();
-    gen_register_dump();
-    str = format_string(" ", LABEL_STR_LEN);
-    str = {str, "j write_tohost"};
-    instr_stream.push_back(str);
+    string instr[$];
+    dump_perf_stats(instr);
+    gen_register_dump(instr);
+    instr.push_back($sformatf("la x%0d, write_tohost", cfg.scratch_reg));
+    instr.push_back($sformatf("jalr x0, x%0d, 0", cfg.scratch_reg));
+    gen_section(get_label("ecall_handler", hart), instr);
   endfunction
 
   // Ebreak trap handler
@@ -1260,7 +1271,7 @@ class riscv_asm_program_gen extends uvm_object;
     string instr[$];
     gen_signature_handshake(instr, CORE_STATUS, INSTR_FAULT_EXCEPTION);
     gen_signature_handshake(.instr(instr), .signature_type(WRITE_CSR), .csr(MCAUSE));
-   /* if (cfg.pmp_cfg.enable_pmp_exception_handler) begin
+    /*if (cfg.pmp_cfg.enable_pmp_exception_handler) begin
       cfg.pmp_cfg.gen_pmp_exception_routine({cfg.gpr, cfg.scratch_reg, cfg.pmp_reg},
                                             INSTRUCTION_ACCESS_FAULT,
                                             instr);
@@ -1283,11 +1294,11 @@ class riscv_asm_program_gen extends uvm_object;
     string instr[$];
     gen_signature_handshake(instr, CORE_STATUS, LOAD_FAULT_EXCEPTION);
     gen_signature_handshake(.instr(instr), .signature_type(WRITE_CSR), .csr(MCAUSE));
-  /*  if (cfg.pmp_cfg.enable_pmp_exception_handler) begin
+    /*if (cfg.pmp_cfg.enable_pmp_exception_handler) begin
       cfg.pmp_cfg.gen_pmp_exception_routine({cfg.gpr, cfg.scratch_reg, cfg.pmp_reg},
                                             LOAD_ACCESS_FAULT,
                                             instr);
-    end   */
+    end */
     instr = {instr,
 			$sformatf("csrr  x6, mcause"),
 			$sformatf("csrr  x7, mepc"),
@@ -1304,13 +1315,13 @@ class riscv_asm_program_gen extends uvm_object;
   // TODO: handshake correct csr based on delegation
   virtual function void gen_store_access_fault_handler(int hart);
     string instr[$];
-   // gen_signature_handshake(instr, CORE_STATUS, LOAD_FAULT_EXCEPTION);
-   // gen_signature_handshake(.instr(instr), .signature_type(WRITE_CSR), .csr(MCAUSE));
-  /*  if (cfg.pmp_cfg.enable_pmp_exception_handler) begin
+    gen_signature_handshake(instr, CORE_STATUS, STORE_FAULT_EXCEPTION);
+    gen_signature_handshake(.instr(instr), .signature_type(WRITE_CSR), .csr(MCAUSE));
+    /*if (cfg.pmp_cfg.enable_pmp_exception_handler) begin
       cfg.pmp_cfg.gen_pmp_exception_routine({cfg.gpr, cfg.scratch_reg, cfg.pmp_reg},
-                                            LOAD_ACCESS_FAULT,
+                                            STORE_AMO_ACCESS_FAULT,
                                             instr);
-    end   */
+    end */
     instr = {instr,
 			$sformatf("csrr  x6, mcause"),
 			$sformatf("csrr  x7, mepc"),
@@ -1369,6 +1380,7 @@ class riscv_asm_program_gen extends uvm_object;
     instr.push_back("mret");
     gen_section(get_label("store_misaligned_handler", hart), instr);
   endfunction
+
 
   //---------------------------------------------------------------------------------------
   // Page table setup
@@ -1486,7 +1498,7 @@ class riscv_asm_program_gen extends uvm_object;
            interrupt_handler_instr,
            $sformatf("csrr  x6, mcause"),
            $sformatf("csrr  x7, mepc"),
-           $sformatf("csrr  x11, mstatus"),
+           $sformatf("csrr  x11, 0x%0x # %0s;", status, status.name()),
            $sformatf("addi  x7, x7, 4"),
            $sformatf("csrw  mepc, x7"),
            $sformatf("csrr  x7, mepc"),
@@ -1538,17 +1550,14 @@ class riscv_asm_program_gen extends uvm_object;
   endfunction
 
   // Dump performance CSRs if applicable
-  virtual function void dump_perf_stats();
-    string perf_stats[$];
+  virtual function void dump_perf_stats(ref string instr[$]);
     foreach(implemented_csr[i]) begin
       if (implemented_csr[i] inside {[MCYCLE:MHPMCOUNTER31H]}) begin
-        gen_signature_handshake(.instr(perf_stats),
+        gen_signature_handshake(.instr(instr),
                                 .signature_type(WRITE_CSR),
                                 .csr(implemented_csr[i]));
       end
     end
-    format_section(perf_stats);
-    instr_stream = {instr_stream, perf_stats};
   endfunction
 
   // Write the generated program to a file
@@ -1740,19 +1749,23 @@ class riscv_asm_program_gen extends uvm_object;
   //---------------------------------------------------------------------------------------
 
   virtual function void randomize_vec_gpr_and_csr();
+    string lmul;
     if (!(RVV inside {supported_isa})) return;
-    instr_stream.push_back({indent, $sformatf("li x%0d, %0d", cfg.gpr[0], cfg.vector_cfg.vxsat)});
-    instr_stream.push_back({indent, $sformatf("csrw vxsat, x%0d", cfg.gpr[0])});
-    instr_stream.push_back({indent, $sformatf("li x%0d, %0d", cfg.gpr[0], cfg.vector_cfg.vxrm)});
-    instr_stream.push_back({indent, $sformatf("csrw vxrm, x%0d", cfg.gpr[0])});
+    instr_stream.push_back({indent, $sformatf("csrwi vxsat, %0d", cfg.vector_cfg.vxsat)});
+    instr_stream.push_back({indent, $sformatf("csrwi vxrm, %0d", cfg.vector_cfg.vxrm)});
     init_vec_gpr(); // GPR init uses a temporary SEW/LMUL setting before the final value set below.
     instr_stream.push_back($sformatf("li x%0d, %0d", cfg.gpr[1], cfg.vector_cfg.vl));
-    instr_stream.push_back($sformatf("%svsetvli x%0d, x%0d, e%0d, m%0d, d%0d",
+    if ((cfg.vector_cfg.vtype.vlmul > 1) && (cfg.vector_cfg.vtype.fractional_lmul)) begin
+      lmul = $sformatf("mf%0d", cfg.vector_cfg.vtype.vlmul);
+    end else begin
+      lmul = $sformatf("m%0d", cfg.vector_cfg.vtype.vlmul);
+    end
+    instr_stream.push_back($sformatf("%svsetvli x%0d, x%0d, e%0d, %0s, d%0d",
                                      indent,
                                      cfg.gpr[0],
                                      cfg.gpr[1],
                                      cfg.vector_cfg.vtype.vsew,
-                                     cfg.vector_cfg.vtype.vlmul,
+                                     lmul,
                                      cfg.vector_cfg.vtype.vediv));
   endfunction
 
