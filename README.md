@@ -1,19 +1,19 @@
 # Overview
 
-LM RISC-V DV is a verification environment based on the verification environment of [ibex](https://github.com/lowRISC/ibex) core from lowRISC. This environment integrates a random assembly test generator from [Google's RISC-V DV](https://github.com/google/riscv-dv). This work is currently in progress. At present it supports:
+LM RISC-V DV is a verification environment which integrates [SweRV EH-1 Core](https://github.com/chipsalliance/Cores-SweRV) from Western Digital and a random assembly test generator from [Google's RISC-V DV](https://github.com/google/riscv-dv). This is a work in progress. At present it supports:
 
 - RTL Compilation
 - Random Assembly Test Generation
 - Test Compilation (Random, Directed)
 - RTL Simulation
 - Spike ISS Simulation
-- Post Comparison with ISS (Spike)
+- Post-simulation Comparison with ISS (Spike)
 - URG Coverage Report Generation
 - Extraction of Functional Coverage
 
-You can watch a video on youtube about the introduction of LM RISC-V DV.
+You can watch a **youtube video** about the **introduction of LM RISC-V DV**.
 
-[<img alt="LM RISC-V DV Thumbnail" src="docs/img/thumbnail.png" width=341 height=192>](https://www.youtube.com/watch?v=iM_I6MXjWts)
+[<img alt="LM RISC-V DV Thumbnail" src="docs/img/thumbnail.png" width=388 height=244>](https://www.youtube.com/watch?v=iM_I6MXjWts)
 
 ## Directory Structure
 
@@ -99,13 +99,19 @@ source <path to toolchain_paths.sh>
 
 ## Integration of Core with Google's RISC-V DV
 
-[core_integrate.sh](./scripts/core_integrate.sh) is a `bash` script placed in [scripts/](./scripts) directory which clones the cores and Google's RISC-V DV into appropriate folders as discussed in *directory structure* section. You just simply need to run the script through terminal.
+[core_integrate.sh](./scripts/core_integrate.sh) is a `bash` script placed in [scripts/](./scripts). You just simply need to run the script through terminal for setting up the environment for the core.
 
 ```bash
 ./core_integrate.sh
 ```
 
-Currently, only SweRV EH-1 has been integrated. It will thus set up the environment for the SweRV Eh-1 core only.
+When the script is run, it:
+
+- clones the cores (SweRV EH-1 for now) and Google's RISC-V DV into their respective folders
+- checkouts the sources to the lastest tested commit versions
+- takes the required RTL and Testbench sources from [cores](./cores) and integration files, and set up the environment in [integrated_cores](./integrated_cores)
+
+Currently, only SweRV EH-1 has been integrated. It will thus set up the environment for the SweRV EH-1 core only.
 
 ## Contribution
 
