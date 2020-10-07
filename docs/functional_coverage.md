@@ -29,6 +29,3 @@ Coverage report for the functional coverage of randomized test is generated thro
 </p><div align='center'> <b><i>Figure-2</i>: <i>Coverage Report</i></b> </div> 
  
 <p></p>
-
-
-

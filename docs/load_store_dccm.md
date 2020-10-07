@@ -48,7 +48,3 @@ Use the following commands to run the load/store test
 make TEST=riscv_load_store_instr_dccm_test SEED=<fixed_number>  LINK=1
 
 ```
-
-
- 
-

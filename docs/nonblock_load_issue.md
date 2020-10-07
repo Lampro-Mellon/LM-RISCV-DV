@@ -17,11 +17,3 @@ Purpose of the script `nb_postfix.py` is to find and replace the non-block load 
 ### Post-sim Sequence Update
 
 The postfix script is called in `sim.py` to update the trace core log before csv generation. CSV is generated from core log for post-sim comparison.
-
-
-
-
-
-
-
-

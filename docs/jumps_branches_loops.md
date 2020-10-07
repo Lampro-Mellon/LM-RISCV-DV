@@ -22,7 +22,3 @@ make TEST=<test-name>
 #for fixed seed
 make TEST=<test-name> SEED=<fixed_number>
 ```
-
-
- 
-

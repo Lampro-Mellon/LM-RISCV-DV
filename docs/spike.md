@@ -21,11 +21,3 @@ To match the starting Program Counter (PC) to 32'h80000000 as is the contraint o
 ## Unresolved Issue
 ### Spike simulation for .s asm tests
 Spike simulation for .s asm tests ends in assertion failure. This issue stems from the gcc-compilation issue without linker flag.
-
-
-
-
-
-
-
-
