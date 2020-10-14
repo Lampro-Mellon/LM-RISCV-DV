@@ -462,7 +462,6 @@ def run_assembly(asm_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
          %s -Wl,--start-group -lc -lgcc -lm -lmetal -lmetal-gloss -Wl,--end-group -o %s " % \
           (get_env_var("RISCV_GCC", debug_cmd = debug_cmd), isa, mabi, asm_test, L_path, linker_path, asm_test, elf))
     run_cmd_output(cmd.split(), debug_cmd = debug_cmd)
-    print ("ssssssssssss",cmd))
     
   # Convert the ELF to plain binary and hex
   # Generating Binary
