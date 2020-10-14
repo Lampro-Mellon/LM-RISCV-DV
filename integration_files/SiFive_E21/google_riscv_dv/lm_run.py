@@ -450,10 +450,19 @@ def run_assembly(asm_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   	run_cmd_output(cmd.split(), debug_cmd = debug_cmd)    
   elif asm_test.endswith(".s"):
   #TODO (Najeeb do linked elf gen for spike)
-    cmd = ("%s/bin/riscv64-unknown-elf-cpp -I%s %s > %s" % (get_env_var("RISCV_TOOLCHAIN", debug_cmd = debug_cmd), gcc_user_extension_path, asm_test, cpp_s))
-    os.system(cmd)
-    cmd = ("%s/bin/riscv64-unknown-elf-as -march=%s %s -o %s" % (get_env_var("RISCV_TOOLCHAIN", debug_cmd = debug_cmd), isa, cpp_s, elf))
-    os.system(cmd)
+    #cmd = ("%s/bin/riscv64-unknown-elf-cpp -I%s %s > %s" % (get_env_var("RISCV_TOOLCHAIN", debug_cmd = debug_cmd), gcc_user_extension_path, asm_test, cpp_s))
+    #os.system(cmd)
+    #cmd = ("%s/bin/riscv64-unknown-elf-as -march=%s %s -o %s" % (get_env_var("RISCV_TOOLCHAIN", debug_cmd = debug_cmd), isa, cpp_s, elf))
+    #os.system(cmd)
+    #test_name=
+    L_path = ("%s/install/lib/release/"  % (gcc_user_extension_path))
+    I_path = ("%s/install/include/"  % (gcc_user_extension_path))
+    cmd = ("%s -march=%s -mabi=%s -mcmodel=medlow --specs=nano.specs -Os  -Wl,--gc-sections -Wl,-Map,%s.map \
+         -nostdlib -nostartfiles  -L%s -T%s \
+         %s -Wl,--start-group -lc -lgcc -lm -lmetal -lmetal-gloss -Wl,--end-group -o %s " % \
+          (get_env_var("RISCV_GCC", debug_cmd = debug_cmd), isa, mabi, asm_test, L_path, linker_path, asm_test, elf))
+    run_cmd_output(cmd.split(), debug_cmd = debug_cmd)
+    print ("ssssssssssss",cmd))
     
   # Convert the ELF to plain binary and hex
   # Generating Binary
