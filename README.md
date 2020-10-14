@@ -11,9 +11,9 @@ LM RISC-V DV is a verification environment which integrates [SweRV EH-1 Core](ht
 - URG Coverage Report Generation
 - Extraction of Functional Coverage
 
-You can watch a **youtube video** about the **introduction of LM RISC-V DV**.
+You can watch the **youtube playlist** for **introduction to LM RISC-V DV** and **Environment Demo**.
 
-[<img alt="LM RISC-V DV Thumbnail" src="docs/img/youtube_thumb.png" width=388 height=244>](https://www.youtube.com/watch?v=iM_I6MXjWts)
+[<img alt="LM RISC-V DV Thumbnail" src="docs/img/youtube_thumb.png" width=388 height=244>](https://www.youtube.com/watch?v=vGs8BuZhm5Q&list=PLLBoDLOd3AMSHjz4mMJsWfSNV-TZBWArQ)
 
 ## Directory Structure
 
