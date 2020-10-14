@@ -21,7 +21,7 @@ SweRV_EH1
     ├── Makefile
     ├── sim.py
     ├── SweRV_EH1_flist.f
-    └── vcs.tcl
+    └── waves.tcl
 ```
 
 ### directed_tests/
@@ -112,7 +112,7 @@ This yaml file is used while compiling and simulating the RTL. It is called from
          -l <out>/compile.log
          -lca -kdb <cmp_opts> <wave_opts>"
     wave_opts: >
-      -debug_access+all -ucli -do vcs.tcl
+      -debug_access+all -ucli -do waves.tcl
     cov_opts: >
       -cm_dir <out>/test.vdb
 
@@ -123,7 +123,7 @@ This yaml file is used while compiling and simulating the RTL. It is called from
         <sim_opts> <wave_opts> <cov_opts>
         -l <sim_dir>/sim.log
     wave_opts: >
-      -ucli -do <cwd>/vcs.tcl
+      -ucli -do <cwd>/waves.tcl
     cov_opts: >
       -cm_name test_<test_name>_<iteration>
       -cm_dir <out>/test.vdb
@@ -149,11 +149,11 @@ This python script is used by makefile for compiling and simulating the design. 
 
 ### SweRV_EH1_flist.f
 
-It lists all the files and directories which are to be compiled. This file is given to `vcs` command using `-f` flag in `yaml/rtl_simualtion.yaml`.
+It lists all the files and directories which are to be compiled. This file is given to RTL Compilation command using flag in `yaml/rtl_simualtion.yaml`.
 
-### vcs.tcl
+### waves.tcl
 
-This TCL script contains code for `FSDB` and `VPD` dumping. If **verdi** is properly set up and exists on the path then `FSDB` is dumped otherwise `VPD` will be dumped.
+This TCL script contains code for dumping waves on core simulation.
 
 ### RISC-V DV Flow for Random ASM Tests
 

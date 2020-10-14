@@ -11,10 +11,6 @@ LM RISC-V DV is a verification environment which integrates [SweRV EH-1 Core](ht
 - URG Coverage Report Generation
 - Extraction of Functional Coverage
 
-You can watch a **youtube video** about the **introduction of LM RISC-V DV**.
-
-[<img alt="LM RISC-V DV Thumbnail" src="docs/img/thumbnail.png" width=388 height=244>](https://www.youtube.com/watch?v=iM_I6MXjWts)
-
 ## Directory Structure
 
 ```bash
@@ -34,7 +30,7 @@ You can watch a **youtube video** about the **introduction of LM RISC-V DV**.
 │       ├── Makefile
 │       ├── sim.py
 │       ├── SweRV_EH1_flist.f
-│       └── vcs.tcl
+│       └── waves.tcl
 └── scripts
     ├── core_integrate.sh
     └── toolchain_paths.sh
@@ -80,7 +76,7 @@ Following are the requirements for running the test generator and environment.
 - Python 3
 - SV and UVM 1.2 Simulator
 
-For manually building the `RISC-V GNU Toolchain`, visit the [riscv-gnu-toolchain](https://github.com/riscv/riscv-gnu-toolchain) repository on Github. Pre-built toolchains can be downloaded from [SiFive Software](https://www.sifive.com/software) Page. We are using `Spike ISS` for LM RISC-V DV. It can be manually built from the source which can be obtained from [riscv-isa-sim](https://github.com/riscv/riscv-isa-sim) repository. `Python 3.7` or above is recommended for the python scripts to work properly for test generation, compilation and simulation. LM RISC-V DV Environment is tested with `vcs` simulator. Howeever, according to Google's RISC-V Documentation, a number of `simulators` has been verified with the test generator including Synopsys VCS, Cadence Incisive/Xcelium, Mentor Questa, and Aldec Riviera-PRO.
+For manually building the `RISC-V GNU Toolchain`, visit the [riscv-gnu-toolchain](https://github.com/riscv/riscv-gnu-toolchain) repository on Github. Pre-built toolchains can be downloaded from [SiFive Software](https://www.sifive.com/software) Page. We are using `Spike ISS` for LM RISC-V DV. It can be manually built from the source which can be obtained from [riscv-isa-sim](https://github.com/riscv/riscv-isa-sim) repository. `Python 3.7` or above is recommended for the python scripts to work properly for test generation, compilation and simulation. According to Google's RISC-V Documentation, a number of `simulators` has been verified with the test generator including Synopsys VCS, Cadence Incisive/Xcelium, Mentor Questa, and Aldec Riviera-PRO.
 
 ## Setup
 

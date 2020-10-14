@@ -24,7 +24,7 @@
          -l <out>/compile.log
          -lca -kdb <cmp_opts> <wave_opts>"
     wave_opts: >
-      -debug_access+all -ucli -do vcs.tcl
+      -debug_access+all -ucli -do waves.tcl
     cov_opts: >
       -cm line+tgl+branch
       -cm_hier cover.cfg
@@ -38,7 +38,7 @@
         +tracer_file_base=<sim_dir>/trace_core
         -l <sim_dir>/sim.log
     wave_opts: >
-      -ucli -do <cwd>/vcs.tcl
+      -ucli -do <cwd>/waves.tcl
     cov_opts: >
       -cm line+tgl+branch
       -cm_name test_<test_name>_<iteration>
