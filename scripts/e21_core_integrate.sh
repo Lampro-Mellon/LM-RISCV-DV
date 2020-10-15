@@ -48,10 +48,14 @@ rm -rf "${INTEGRATED_CORES}/SiFive_E21/google_riscv_dv/"
 
 
  # TODO: Check for files before renaming 
+mv "${RV_DV}/src/riscv_instr_gen_config.sv" "${RV_DV}/src/default_riscv_instr_gen_config.sv";
+mv "${RV_DV}/src/riscv_asm_program_gen.sv" "${RV_DV}/src/default_riscv_asm_program_gen.sv";
 mv "${RV_DV}/scripts/spike_log_to_trace_csv.py" "${RV_DV}/scripts/default_spike_log_to_trace_csv.py";
 mv "${RV_DV}/scripts/instr_trace_compare.py" "${RV_DV}/scripts/default_instr_trace_compare.py";
 
 cp "${INTEGRATION_FILES}/SiFive_E21/google_riscv_dv/lm_run.py" "${RV_DV}/";
+cp "${INTEGRATION_FILES}/SiFive_E21/google_riscv_dv/src/riscv_instr_gen_config.sv" "${RV_DV}/src/riscv_instr_gen_config.sv";
+cp "${INTEGRATION_FILES}/SiFive_E21/google_riscv_dv/src/riscv_asm_program_gen.sv" "${RV_DV}/src/riscv_asm_program_gen.sv";
 cp "${INTEGRATION_FILES}/SiFive_E21/google_riscv_dv/scripts/spike_log_to_trace_csv.py" "${RV_DV}/scripts/";
 cp "${INTEGRATION_FILES}/SiFive_E21/google_riscv_dv/scripts/instr_trace_compare.py" "${RV_DV}/scripts/";
 
