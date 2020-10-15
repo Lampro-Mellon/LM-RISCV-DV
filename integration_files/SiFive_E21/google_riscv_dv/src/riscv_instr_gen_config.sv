@@ -101,7 +101,6 @@ class riscv_instr_gen_config extends uvm_object;
   // processor.
   bit                    check_misa_init_val = 1'b0;
   bit                    check_xstatus = 1'b1;
-  bit			 gen_exceptions = 0;
 
   // Virtual address translation is on for this test
   rand bit               virtual_addr_translation_on;
@@ -115,10 +114,10 @@ class riscv_instr_gen_config extends uvm_object;
   //-----------------------------------------------------------------------------
   //  User space memory region and stack setting
   //-----------------------------------------------------------------------------
-	//TODO add iccm region later!
+
   mem_region_t mem_region[$] = '{
-    '{name:"region_0", size_in_bytes: 1024*32, xwr: 3'b111},
-    '{name:"region_1", size_in_bytes: 1024*16, xwr: 3'b111}
+    '{name:"region_0", size_in_bytes: 4096,      xwr: 3'b111},
+    '{name:"region_1", size_in_bytes: 4096 * 16, xwr: 3'b111}
   };
 
   // Dedicated shared memory region for multi-harts atomic operations
@@ -127,7 +126,7 @@ class riscv_instr_gen_config extends uvm_object;
   };
 
   // Stack section word length
-  int stack_len = 5000;
+  int stack_len = 100;
 
   //-----------------------------------------------------------------------------
   // Kernel section setting, used by supervisor mode programs
@@ -138,8 +137,7 @@ class riscv_instr_gen_config extends uvm_object;
     '{name:"s_region_1", size_in_bytes: 4096, xwr: 3'b111}};
 
   // Kernel Stack section word length
-  int kernel_stack_len = 4000;
-
+  int kernel_stack_len = 100;
 
   // Number of instructions for each kernel program
   int kernel_program_instr_cnt = 400;
@@ -476,7 +474,6 @@ class riscv_instr_gen_config extends uvm_object;
     `uvm_field_int(no_load_store, UVM_DEFAULT)
     `uvm_field_int(no_csr_instr, UVM_DEFAULT)
     `uvm_field_int(no_ebreak, UVM_DEFAULT)
-    `uvm_field_int(gen_exceptions, UVM_DEFAULT)
     `uvm_field_int(no_dret, UVM_DEFAULT)
     `uvm_field_int(no_fence, UVM_DEFAULT)
     `uvm_field_int(no_wfi, UVM_DEFAULT)
@@ -539,7 +536,6 @@ class riscv_instr_gen_config extends uvm_object;
     get_bool_arg_value("+no_dret=", no_dret);
     get_bool_arg_value("+no_wfi=", no_wfi);
     get_bool_arg_value("+no_branch_jump=", no_branch_jump);
-    get_bool_arg_value("+gen_exceptions=", gen_exceptions);
     get_bool_arg_value("+no_load_store=", no_load_store);
     get_bool_arg_value("+no_csr_instr=", no_csr_instr);
     get_bool_arg_value("+fix_sp=", fix_sp);

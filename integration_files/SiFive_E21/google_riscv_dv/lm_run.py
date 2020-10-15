@@ -364,9 +364,14 @@ def gcc_compile(test_list, output_dir, isa, mabi, opts, gcc_user_extension_path,
         logging.error("Cannot find assembly test: %s\n", asm)
         sys.exit(RET_FAIL)
       # gcc comilation
-      cmd = ("%s -static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles %s \
-             -I%s -T%s %s -o %s" % \
-             (get_env_var("RISCV_GCC", debug_cmd = debug_cmd), asm, gcc_user_extension_path, linker_path, opts, elf))
+      #cmd = ("%s -static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles %s \ -I%s -T%s %s -o %s" % \(get_env_var("RISCV_GCC", debug_cmd = debug_cmd), asm, gcc_user_extension_path, linker_path, opts, elf))
+      L_path = ("%s/install/lib/release"  % (gcc_user_extension_path))
+      I_path = ("%s/install/include"  % (gcc_user_extension_path))
+      cmd = ("%s -march=%s -mabi=%s -mcmodel=medlow --specs=nano.specs -Os  -Wl,--gc-sections -Wl,-Map,%s.map \
+           -nostdlib -nostartfiles  -L%s -T%s \
+           %s -Wl,--start-group -lc -lgcc -lm -Wl,--end-group -o %s " % \
+           (get_env_var("RISCV_GCC", debug_cmd = debug_cmd), isa, mabi, asm, L_path, linker_path, asm, elf))
+      run_cmd_output(cmd.split(), debug_cmd = debug_cmd)
       if 'gcc_opts' in test:
         cmd += test['gcc_opts']
       if 'gen_opts' in test:
@@ -443,11 +448,17 @@ def run_assembly(asm_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   # gcc compilation
   #logging.info("Generating elf")
   if asm_test.endswith(".S"):
-  	cmd = ("%s -static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles %s -I%s -T%s %s -o %s " % (get_env_var("RISCV_GCC", debug_cmd = debug_cmd), asm_test,
-			gcc_user_extension_path, linker_path, gcc_opts, elf))
-  	cmd += (" -march=%s" % isa)
-  	cmd += (" -mabi=%s" % mabi)
-  	run_cmd_output(cmd.split(), debug_cmd = debug_cmd)    
+      #cmd = ("%s -static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles %s -I%s -T%s %s -o %s " % (get_env_var("RISCV_GCC", debug_cmd = debug_cmd), asm_test, gcc_user_extension_path, linker_path, gcc_opts, elf))
+  	#cmd += (" -march=%s" % isa)
+  	#cmd += (" -mabi=%s" % mabi)
+  	#run_cmd_output(cmd.split(), debug_cmd = debug_cmd)  
+    L_path = ("%s/install/lib/release/"  % (gcc_user_extension_path))
+    I_path = ("%s/install/include/"  % (gcc_user_extension_path))
+    cmd = ("%s -march=%s -mabi=%s -mcmodel=medlow --specs=nano.specs -Os  -Wl,--gc-sections -Wl,-Map,%s.map \
+         -nostdlib -nostartfiles  -L%s -T%s \
+         %s -Wl,--start-group -lc -lgcc -lm -lmetal -lmetal-gloss -Wl,--end-group -o %s " % \
+          (get_env_var("RISCV_GCC", debug_cmd = debug_cmd), isa, mabi, asm_test, L_path, linker_path, asm_test, elf))
+    run_cmd_output(cmd.split(), debug_cmd = debug_cmd)  
   elif asm_test.endswith(".s"):
   #TODO (Najeeb do linked elf gen for spike)
     #cmd = ("%s/bin/riscv64-unknown-elf-cpp -I%s %s > %s" % (get_env_var("RISCV_TOOLCHAIN", debug_cmd = debug_cmd), gcc_user_extension_path, asm_test, cpp_s))

@@ -49,7 +49,6 @@ class riscv_asm_program_gen extends uvm_object;
    int unsigned                        directed_instr_stream_ratio[string];
    riscv_page_table_list#(SATP_MODE)   page_table_list;
    int                                 hart;
-   bit excep;
 
   `uvm_object_utils(riscv_asm_program_gen)
 
@@ -68,7 +67,7 @@ class riscv_asm_program_gen extends uvm_object;
     gen_program_header();
     for (int hart = 0; hart < cfg.num_of_harts; hart++) begin
       string sub_program_name[$];
-      instr_stream.push_back($sformatf("h%0d_start:", hart));
+      instr_stream.push_back($sformatf("h%0d_enter:", hart));
       if (!cfg.bare_program_mode) begin
         setup_misa();
         // Create all page tables
@@ -86,14 +85,10 @@ class riscv_asm_program_gen extends uvm_object;
         gen_ecall_handler(hart);
         // Instruction fault handler
         gen_instr_fault_handler(hart);
-        // Load access fault handler
-        gen_load_access_fault_handler(hart);
-        // Store access fault handler
-        gen_store_access_fault_handler(hart);
-        // Load adress misaligned handler
-        gen_load_misaligned_handler(hart);
-        // Store adress misaligned handler
-        gen_store_misaligned_handler(hart);
+        // Load fault handler
+        gen_load_fault_handler(hart);
+        // Store fault handler
+        gen_store_fault_handler(hart);
         if (hart == 0) begin
           gen_test_done();
         end
@@ -103,7 +98,6 @@ class riscv_asm_program_gen extends uvm_object;
       // Generate main program
       main_program[hart] = riscv_instr_sequence::type_id::create(get_label("main", hart));
       main_program[hart].instr_cnt = cfg.main_program_instr_cnt;
-      excep = cfg.gen_exceptions;
       main_program[hart].is_debug_program = 0;
       main_program[hart].label_name = main_program[hart].get_name();
       generate_directed_instr_stream(.hart(hart),
@@ -123,56 +117,6 @@ class riscv_asm_program_gen extends uvm_object;
       main_program[hart].generate_instr_stream();
       `uvm_info(`gfn, "Generating main program instruction stream...done", UVM_LOW)
       instr_stream = {instr_stream, main_program[hart].instr_string_list};
-
-		  if(excep) begin
-			//instr_stream = {instr_stream, $sformatf("%scsrr x31, mstatus", indent)}; 
-			instr_stream = {instr_stream, $sformatf("%sli x30, 0x8", indent)}; 
-			instr_stream = {instr_stream, $sformatf("%scsrs mstatus,  x30", indent)}; 
-			instr_stream = {instr_stream, $sformatf("%scsrr x31, mstatus", indent)}; 
-			instr_stream = {instr_stream, $sformatf("%scsrr x31, mie", indent)}; 
-			instr_stream = {instr_stream, $sformatf("%sli x30, 0x30000080", indent)}; 
-			instr_stream = {instr_stream, $sformatf("%scsrs mie,  x30", indent)}; 
-			//instr_stream = {instr_stream, $sformatf("%scsrr x31, mie", indent)}; 
-			instr_stream = {instr_stream, $sformatf("%scsrr x31, mip", indent)}; 
-			instr_stream = {instr_stream, $sformatf("%sli x30, 0x30000080", indent)}; 
-			instr_stream = {instr_stream, $sformatf("%scsrs mip,  x30", indent)}; 
-			instr_stream = {instr_stream, $sformatf("%scsrr x31, mip", indent)}; 
-			instr_stream = {instr_stream, $sformatf("%sadd x0, x0, x0", indent)};
-			instr_stream = {instr_stream, $sformatf("%scsrr x28, 0x7D2 #mitcnt0", indent)};
-			instr_stream = {instr_stream, $sformatf("%scsrr x29, 0x7D5 #mitcnt1", indent)};
-		        instr_stream = {instr_stream, $sformatf("%sli x28, 0x2", indent)};
-			instr_stream = {instr_stream, $sformatf("%scsrw 0x7D5, x28", indent)};
-			//instr_stream = {instr_stream, $sformatf("%scsrw 0x7D2, x28", indent)};
-			instr_stream = {instr_stream, $sformatf("%sli x29, 0xfff", indent)};
-			instr_stream = {instr_stream, $sformatf("%scsrw 0x7D3, x29", indent)};
-			instr_stream = {instr_stream, $sformatf("%scsrw 0x7D6, x29", indent)};
-			instr_stream = {instr_stream, $sformatf("%scsrr x30, 0x7D3", indent)};
-			instr_stream = {instr_stream, $sformatf("%scsrr x31, 0x7D6", indent)};
-			instr_stream = {instr_stream, $sformatf("%sli x18, 0xfff", indent)};
-                        instr_stream.push_back("subtr_one:");
-			instr_stream = {instr_stream, $sformatf("%saddi x18, x18, -1", indent)};
-			instr_stream = {instr_stream, $sformatf("%scsrr x27, 0x7D2", indent)};
-			instr_stream = {instr_stream, $sformatf("%scsrr x24, 0x7D5", indent)};
-			instr_stream = {instr_stream, $sformatf("%scsrr x17, mcause", indent)};
-			instr_stream = {instr_stream, $sformatf("%sbnez x18, subtr_one", indent)}; 
-
-
-			instr_stream = {instr_stream, $sformatf("%s.4byte 0x11c3f2d3 # kIllegalOpcode", indent)};
-   			instr_stream = {instr_stream, $sformatf("%sadd x0, x0, x0", indent)};
-   			instr_stream = {instr_stream, $sformatf("%sli x4, 0x2ffffffc", indent)};
-   			instr_stream = {instr_stream, $sformatf("%ssw x4, 2(x4)  #misaligned store access", indent)};
-   			instr_stream = {instr_stream, $sformatf("%ssw x4, 0(x4)", indent)};
-   			instr_stream = {instr_stream, $sformatf("%slw x5, 2(x4) #misaligned load access", indent)};
-   			instr_stream = {instr_stream, $sformatf("%slw x9, 0(x4)", indent)};
-			instr_stream = {instr_stream, $sformatf("%sadd x0, x0, x0", indent)};
-   			instr_stream = {instr_stream, $sformatf("%sli x18, 0xf003fff0", indent)};
-   			instr_stream = {instr_stream, $sformatf("%ssw x4, 0(x18)  #store access fault", indent)};
-   			instr_stream = {instr_stream, $sformatf("%ssw x4, 60(x18)", indent)};
-   			instr_stream = {instr_stream, $sformatf("%slw x5, 0(x18) #load access fault", indent)}; 
-   			/*instr_stream = {instr_stream, $sformatf("%slw x9, 60(x18)", indent)}; */
-			instr_stream = {instr_stream, $sformatf("%sadd x0, x0, x0", indent)}; 
-		  end
-
       // If PMP is supported, need to jump from end of main program to test_done section at the end
       // of main_program, as the test_done will have moved to the beginning of the program
       instr_stream = {instr_stream,
@@ -372,22 +316,21 @@ class riscv_asm_program_gen extends uvm_object;
 
   virtual function void gen_program_header();
     string str[$];
-    instr_stream.push_back(".include \"user_define.h\"");
-	instr_stream.push_back("#define STDOUT 0xd0580000");
-    instr_stream.push_back(".globl _start");
+    //instr_stream.push_back(".include \"user_define.h\"");
+    instr_stream.push_back(".globl _enter");
     instr_stream.push_back(".section .text");
     if (cfg.disable_compressed_instr) begin
       instr_stream.push_back(".option norvc;");
     end
-    str.push_back(".include \"user_init.s\"");
+    //str.push_back(".include \"user_init.s\"");
     str.push_back($sformatf("csrr x5, 0x%0x", MHARTID));
     for (int hart = 0; hart < cfg.num_of_harts; hart++) begin
       str = {str, $sformatf("li x6, %0d", hart),
                   $sformatf("beq x5, x6, %0df", hart)};
     end
-    gen_section("_start", str);
+    gen_section("_enter", str);
     for (int hart = 0; hart < cfg.num_of_harts; hart++) begin
-      instr_stream.push_back($sformatf("%0d: la x%0d, h%0d_start", hart, cfg.scratch_reg, hart));
+      instr_stream.push_back($sformatf("%0d: la x%0d, h%0d_enter", hart, cfg.scratch_reg, hart));
       instr_stream.push_back($sformatf("jalr x0, x%0d, 0", cfg.scratch_reg));
     end
   endfunction
@@ -753,12 +696,14 @@ class riscv_asm_program_gen extends uvm_object;
   virtual function void gen_test_done();
     string str = format_string("test_done:", LABEL_STR_LEN);
     instr_stream.push_back(str);
-    instr_stream.push_back({indent, "li gp, 1"});
-    if (cfg.bare_program_mode) begin
-      instr_stream.push_back({indent, "j write_tohost"});
-    end else begin
-      instr_stream.push_back({indent, "ecall"});
-    end
+    instr_stream.push_back({indent, "li x6, 0x4000"});
+	instr_stream.push_back({indent, "li x7, 0x5555"});
+	instr_stream.push_back({indent, "sw x7, 0(x6)"});
+    //if (cfg.bare_program_mode) begin
+      //instr_stream.push_back({indent, "j write_tohost"});
+    //end else begin
+     // instr_stream.push_back({indent, "ecall"});
+    //end
   endfunction
 
   // Dump all GPR to the starting point of the program
@@ -768,7 +713,7 @@ class riscv_asm_program_gen extends uvm_object;
   virtual function void gen_register_dump(ref string instr[$]);
     string str;
     // Load base address
-    str = $sformatf("la x%0d, _start", cfg.gpr[0]);
+    str = $sformatf("la x%0d, _enter", cfg.gpr[0]);
     instr.push_back(str);
     // Generate sw/sd instructions
     for(int i = 0; i < 32; i++) begin
@@ -1011,13 +956,9 @@ class riscv_asm_program_gen extends uvm_object;
       // Instruction fault handler
       gen_instr_fault_handler(hart);
       // Load fault handler
-      gen_load_access_fault_handler(hart);
+      gen_load_fault_handler(hart);
       // Store fault handler
-      gen_store_access_fault_handler(hart);
-      // Load adress misaligned handler
-      gen_load_misaligned_handler(hart);
-      // Store adress misaligned handler
-      gen_store_misaligned_handler(hart);
+      gen_store_fault_handler(hart);
     end
     // Ebreak handler
     gen_ebreak_handler(hart);
@@ -1128,16 +1069,10 @@ class riscv_asm_program_gen extends uvm_object;
              $sformatf("beq x%0d, x%0d, %0sinstr_fault_handler",
                        cfg.gpr[0], cfg.gpr[1], hart_prefix(hart)),
              $sformatf("li x%0d, 0x%0x", cfg.gpr[1], LOAD_ACCESS_FAULT),
-             $sformatf("beq x%0d, x%0d, %0sload_access_fault_handler",
-                       cfg.gpr[0], cfg.gpr[1], hart_prefix(hart)),
-             $sformatf("li x%0d, 0x4", cfg.gpr[1]),
-             $sformatf("beq x%0d, x%0d, %0sload_misaligned_handler",
+             $sformatf("beq x%0d, x%0d, %0sload_fault_handler",
                        cfg.gpr[0], cfg.gpr[1], hart_prefix(hart)),
              $sformatf("li x%0d, 0x%0x", cfg.gpr[1], STORE_AMO_ACCESS_FAULT),
-             $sformatf("beq x%0d, x%0d, %0sstore_access_fault_handler",
-                       cfg.gpr[0], cfg.gpr[1], hart_prefix(hart)),
-             $sformatf("li x%0d, 0x6", cfg.gpr[1]),
-             $sformatf("beq x%0d, x%0d, %0sstore_misaligned_handler",
+             $sformatf("beq x%0d, x%0d, %0sstore_fault_handler",
                        cfg.gpr[0], cfg.gpr[1], hart_prefix(hart)),
              $sformatf("li x%0d, 0x%0x", cfg.gpr[1], INSTRUCTION_PAGE_FAULT),
              $sformatf("beq x%0d, x%0d, %0spt_fault_handler",
@@ -1254,12 +1189,9 @@ class riscv_asm_program_gen extends uvm_object;
     gen_signature_handshake(instr, CORE_STATUS, ILLEGAL_INSTR_EXCEPTION);
     gen_signature_handshake(.instr(instr), .signature_type(WRITE_CSR), .csr(MCAUSE));
     instr = {instr,
-			$sformatf("csrr  x6, mcause"),
-			$sformatf("csrr  x7, mepc"),
-			$sformatf("csrr  x11, mstatus"),
-            $sformatf("addi  x7, x7, 4"),
-            $sformatf("csrw  mepc, x7"),
-			$sformatf("csrr  x7, mepc")
+            $sformatf("csrr  x%0d, 0x%0x", cfg.gpr[0], MEPC),
+            $sformatf("addi  x%0d, x%0d, 4", cfg.gpr[0], cfg.gpr[0]),
+            $sformatf("csrw  0x%0x, x%0d", MEPC, cfg.gpr[0])
     };
     pop_gpr_from_kernel_stack(MSTATUS, MSCRATCH, cfg.mstatus_mprv, cfg.sp, cfg.tp, instr);
     instr.push_back("mret");
@@ -1271,116 +1203,45 @@ class riscv_asm_program_gen extends uvm_object;
     string instr[$];
     gen_signature_handshake(instr, CORE_STATUS, INSTR_FAULT_EXCEPTION);
     gen_signature_handshake(.instr(instr), .signature_type(WRITE_CSR), .csr(MCAUSE));
-    /*if (cfg.pmp_cfg.enable_pmp_exception_handler) begin
+    if (cfg.pmp_cfg.enable_pmp_exception_handler) begin
       cfg.pmp_cfg.gen_pmp_exception_routine({cfg.gpr, cfg.scratch_reg, cfg.pmp_reg},
                                             INSTRUCTION_ACCESS_FAULT,
                                             instr);
-    end */
-    instr = {instr,
-			$sformatf("csrr  x6, mcause"),
-			$sformatf("csrr  x7, mepc"),
-			$sformatf("csrr  x11, mstatus"),
-            $sformatf("addi  x7, x7, 4"),
-            $sformatf("csrw  mepc, x7"),
-			$sformatf("csrr  x7, mepc")
-    };
+    end
     pop_gpr_from_kernel_stack(MSTATUS, MSCRATCH, cfg.mstatus_mprv, cfg.sp, cfg.tp, instr);
     instr.push_back("mret");
     gen_section(get_label("instr_fault_handler", hart), instr);
   endfunction
 
   // TODO: handshake correct csr based on delegation
-  virtual function void gen_load_access_fault_handler(int hart);
+  virtual function void gen_load_fault_handler(int hart);
     string instr[$];
     gen_signature_handshake(instr, CORE_STATUS, LOAD_FAULT_EXCEPTION);
     gen_signature_handshake(.instr(instr), .signature_type(WRITE_CSR), .csr(MCAUSE));
-    /*if (cfg.pmp_cfg.enable_pmp_exception_handler) begin
+    if (cfg.pmp_cfg.enable_pmp_exception_handler) begin
       cfg.pmp_cfg.gen_pmp_exception_routine({cfg.gpr, cfg.scratch_reg, cfg.pmp_reg},
                                             LOAD_ACCESS_FAULT,
                                             instr);
-    end */
-    instr = {instr,
-			$sformatf("csrr  x6, mcause"),
-			$sformatf("csrr  x7, mepc"),
-			$sformatf("csrr  x11, mstatus"),
-            $sformatf("addi  x7, x7, 4"),
-            $sformatf("csrw  mepc, x7"),
-			$sformatf("csrr  x7, mepc")
-    };
+    end
     pop_gpr_from_kernel_stack(MSTATUS, MSCRATCH, cfg.mstatus_mprv, cfg.sp, cfg.tp, instr);
     instr.push_back("mret");
-    gen_section(get_label("load_access_fault_handler", hart), instr);
+    gen_section(get_label("load_fault_handler", hart), instr);
   endfunction
 
   // TODO: handshake correct csr based on delegation
-  virtual function void gen_store_access_fault_handler(int hart);
+  virtual function void gen_store_fault_handler(int hart);
     string instr[$];
     gen_signature_handshake(instr, CORE_STATUS, STORE_FAULT_EXCEPTION);
     gen_signature_handshake(.instr(instr), .signature_type(WRITE_CSR), .csr(MCAUSE));
-    /*if (cfg.pmp_cfg.enable_pmp_exception_handler) begin
+    if (cfg.pmp_cfg.enable_pmp_exception_handler) begin
       cfg.pmp_cfg.gen_pmp_exception_routine({cfg.gpr, cfg.scratch_reg, cfg.pmp_reg},
                                             STORE_AMO_ACCESS_FAULT,
                                             instr);
-    end */
-    instr = {instr,
-			$sformatf("csrr  x6, mcause"),
-			$sformatf("csrr  x7, mepc"),
-			$sformatf("csrr  x11, mstatus"),
-            $sformatf("addi  x7, x7, 4"),
-            $sformatf("csrw  mepc, x7"),
-			$sformatf("csrr  x7, mepc")
-    };
+    end
     pop_gpr_from_kernel_stack(MSTATUS, MSCRATCH, cfg.mstatus_mprv, cfg.sp, cfg.tp, instr);
     instr.push_back("mret");
-    gen_section(get_label("store_access_fault_handler", hart), instr);
+    gen_section(get_label("store_fault_handler", hart), instr);
   endfunction
-
-  // TODO: handshake correct csr based on delegation
-  virtual function void gen_load_misaligned_handler(int hart);
-    string instr[$];
-   // gen_signature_handshake(instr, CORE_STATUS, LOAD_FAULT_EXCEPTION);
-  // gen_signature_handshake(.instr(instr), .signature_type(WRITE_CSR), .csr(MCAUSE));
-  /*  if (cfg.pmp_cfg.enable_pmp_exception_handler) begin
-      cfg.pmp_cfg.gen_pmp_exception_routine({cfg.gpr, cfg.scratch_reg, cfg.pmp_reg},
-                                            LOAD_ACCESS_FAULT,
-                                            instr);
-    end   */
-    instr = {instr,
-			$sformatf("csrr  x6, mcause"),
-			$sformatf("csrr  x7, mepc"),
-			$sformatf("csrr  x11, mstatus"),
-            $sformatf("addi  x7, x7, 4"),
-            $sformatf("csrw  mepc, x7"),
-			$sformatf("csrr  x7, mepc")
-    };
-    pop_gpr_from_kernel_stack(MSTATUS, MSCRATCH, cfg.mstatus_mprv, cfg.sp, cfg.tp, instr);
-    instr.push_back("mret");
-    gen_section(get_label("load_misaligned_handler", hart), instr);
-  endfunction
-
-  // TODO: handshake correct csr based on delegation
-  virtual function void gen_store_misaligned_handler(int hart);
-    string instr[$];
-   // gen_signature_handshake(instr, CORE_STATUS, LOAD_FAULT_EXCEPTION);
-   // gen_signature_handshake(.instr(instr), .signature_type(WRITE_CSR), .csr(MCAUSE));
-  /*  if (cfg.pmp_cfg.enable_pmp_exception_handler) begin
-      cfg.pmp_cfg.gen_pmp_exception_routine({cfg.gpr, cfg.scratch_reg, cfg.pmp_reg},
-                                            LOAD_ACCESS_FAULT,
-                                            instr);
-    end   */
-    instr = {instr,
-			$sformatf("csrr  x6, mcause"),
-			$sformatf("csrr  x7, mepc"),
-			$sformatf("csrr  x11, mstatus"),
-            $sformatf("addi  x7, x7, 4"),
-            $sformatf("csrw  mepc, x7"),
-			$sformatf("csrr  x7, mepc")
-    };
-    pop_gpr_from_kernel_stack(MSTATUS, MSCRATCH, cfg.mstatus_mprv, cfg.sp, cfg.tp, instr);
-    instr.push_back("mret");
-    gen_section(get_label("store_misaligned_handler", hart), instr);
-  endfunction
-
 
   //---------------------------------------------------------------------------------------
   // Page table setup
@@ -1496,12 +1357,9 @@ class riscv_asm_program_gen extends uvm_object;
     // The value of these CSR are checked by comparing with spike simulation result.
     interrupt_handler_instr = {
            interrupt_handler_instr,
-           $sformatf("csrr  x6, mcause"),
-           $sformatf("csrr  x7, mepc"),
-           $sformatf("csrr  x11, 0x%0x # %0s;", status, status.name()),
-           $sformatf("addi  x7, x7, 4"),
-           $sformatf("csrw  mepc, x7"),
-           $sformatf("csrr  x7, mepc"),
+           $sformatf("csrr  x%0d, 0x%0x # %0s;", cfg.gpr[0], status, status.name()),
+           $sformatf("csrr  x%0d, 0x%0x # %0s;", cfg.gpr[0], ie, ie.name()),
+           $sformatf("csrr  x%0d, 0x%0x # %0s;", cfg.gpr[0], ip, ip.name()),
            // Clean all the pending interrupt
            $sformatf("csrrc x%0d, 0x%0x, x%0d # %0s;",
                      cfg.gpr[0], ip, cfg.gpr[0], ip.name())
