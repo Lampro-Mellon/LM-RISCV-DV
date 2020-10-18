@@ -8,8 +8,13 @@ LM RISC-V DV is a verification environment which integrates [SweRV EH-1 Core](ht
 - RTL Simulation
 - Spike ISS Simulation
 - Post-simulation Comparison with ISS (Spike)
-- URG Coverage Report Generation
+- Code Coverage Report Generation
 - Extraction of Functional Coverage
+
+You can watch the **youtube playlist** about the **introduction of LM RISC-V DV** and its **detailed environment demo**.
+
+[<img alt="LM RISC-V DV Thumbnail" src="docs/img/youtube_thumb.png" width=388 height=244>](https://www.youtube.com/watch?v=I8ISkRhPA5M&list=PLLBoDLOd3AMSHjz4mMJsWfSNV-TZBWArQ)
+
 
 ## Directory Structure
 
