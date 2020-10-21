@@ -1,6 +1,6 @@
 # Overview
 
-LM RISC-V DV is a verification environment which integrates [SweRV EH-1 Core](https://github.com/chipsalliance/Cores-SweRV) from Western Digital and a random assembly test generator from [Google's RISC-V DV](https://github.com/google/riscv-dv). This is a work in progress. At present it supports:
+LM RISC-V DV is a verification environment which integrates [SweRV EH-1 Core](https://github.com/chipsalliance/Cores-SweRV) from Western Digital and a random assembly test generator from [Google's RISC-V DV](https://github.com/google/riscv-dv). This is a work in progress. At present for SweRV EH-1 it supports:
 
 - RTL Compilation
 - Random Assembly Test Generation
@@ -11,6 +11,14 @@ LM RISC-V DV is a verification environment which integrates [SweRV EH-1 Core](ht
 - URG Coverage Report Generation
 - Extraction of Functional Coverage
 
+At present for SiFive E21 core, it supports:
+
+- RTL Compilation
+- Random Assembly Test Generation
+- Test Compilation (Random, Directed)
+- RTL Simulation
+
+
 ## Directory Structure
 
 ```bash
@@ -20,25 +28,40 @@ LM RISC-V DV is a verification environment which integrates [SweRV EH-1 Core](ht
 ├── integrated_cores
 ├── integration_files
 │   └── SweRV_EH1
+│   │   ├── directed_tests
+│   │   ├── google_riscv_dv
+│   │   ├── riscv_dv_extension
+│   │   ├── snapshots
+│   │   ├── testbench
+│   │   ├── yaml
+│   │   ├── cover.cfg
+│   │   ├── Makefile
+│   │   ├── sim.py
+│   │   ├── SweRV_EH1_flist.f
+│   │   └── waves.tcl
+│   └── SiFive_E21
 │       ├── directed_tests
 │       ├── google_riscv_dv
 │       ├── riscv_dv_extension
-│       ├── snapshots
+│       ├── bsp
 │       ├── testbench
 │       ├── yaml
-│       ├── cover.cfg
+│       ├── SiFive_Insight
+│       ├── SiFive_Insight.F 
 │       ├── Makefile
 │       ├── sim.py
-│       ├── SweRV_EH1_flist.f
+│       ├── Top.f
+│       ├── Testbench.f
 │       └── waves.tcl
 └── scripts
     ├── core_integrate.sh
+    ├── e21_core_integrate.sh
     └── toolchain_paths.sh
 ```
 
 ### [cores](./cores)/
 
-This directory is a place holder which will contain the cores in their original source forms cloned from their sites. Currently, LM RISC-V DV has been set up and tested for SweRV EH-1 core from Western Digital. When the cores are cloned, they will be checked out to the most recent versions which have been tested in this environment.  
+This directory is a place holder which will contain the cores in their original source forms cloned from their sites. Currently, LM RISC-V DV has been set up and tested for SweRV EH-1 core from Western Digital. When the cores are cloned, they will be checked out to the most recent versions which have been tested in this environment. For SiFive E21 core, please download it from SiFive website and rename the folder as SiFive_E21.  
 
 ### [docs](./docs)/
 
@@ -107,7 +130,10 @@ When the script is run, it:
 - checkouts the sources to the lastest tested commit versions
 - takes the required RTL and Testbench sources from [cores](./cores) and integration files, and set up the environment in [integrated_cores](./integrated_cores)
 
-Currently, only SweRV EH-1 has been integrated. It will thus set up the environment for the SweRV EH-1 core only.
+To setup the Integrated Environment for SiFive E21 core, run [e21_core_integrate.sh](./scripts/e21_core_integrate.sh). However, it assumes you have already downloaded and placed the SiFive E21 core in [cores](./cores) named as `SiFive_E21`.
+```bash
+./e21_core_integrate.sh
+```
 
 ## Contribution
 
@@ -117,6 +143,7 @@ This is a work in progress. We'd like to accept your contributions to this proje
 
 - [Google's RISC-V DV](https://github.com/google/riscv-dv)
 - [SweRV EH-1 Core (Western Digital)](https://github.com/chipsalliance/Cores-SweRV)
+- [SiFive E21 (SiFive)](https://www.sifive.com/cores/e21)
 - [Ibex core (lowRISC)](https://github.com/lowRISC/ibex)
 
 ## Contact
