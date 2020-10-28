@@ -511,18 +511,22 @@ def compare(test_list, iss, output_dir):
     passes = 0
     fails = 0
     for test in test_list:
-        for idx in range(test['iterations']):
-            if compare_test_run(test, idx, iss, output_dir, report):
-                passes += 1
-            else:
-                fails += 1
+      if ('no_iss' in test and test['no_iss'] == 1) or \
+        ('no_post_compare' in test and test['no_post_compare'] == 1):
+          continue
+      for idx in range(test['iterations']):
+          if compare_test_run(test, idx, iss, output_dir, report):
+              passes += 1
+          else:
+              fails += 1
 
-    summary = "{} PASSED, {} FAILED".format(passes, fails)
-    with open(report, 'a') as report_fd:
-        report_fd.write(summary + '\n')
+    if passes != 0 or fails !=0:
+        summary = "{} PASSED, {} FAILED".format(passes, fails)
+        with open(report, 'a') as report_fd:
+            report_fd.write(summary + '\n')
 
-    logging.info(summary)
-    logging.info("RTL & ISS regression report at {}".format(report))
+        logging.info(summary)
+        logging.info("RTL & ISS regression report at {}".format(report))
 
     return fails == 0
 

@@ -34,6 +34,7 @@ if [ ${RV_DV_SHA_OUTPUT} != ${RV_DV_COMMIT_SHA} ]
 then 
     git clone ${RV_DV_REMOTE} ${RV_DV}
     cd ${RV_DV}
+    pip3 install -r requirements.txt
     git checkout ${RV_DV_COMMIT_SHA}
 else
     printf "HEAD of ${RV_DV} is already at ${RV_DV_COMMIT_SHA}! \n\n"
