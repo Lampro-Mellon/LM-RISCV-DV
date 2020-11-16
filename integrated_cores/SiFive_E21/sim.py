@@ -137,12 +137,24 @@ def trace_log(raw_rtl_log,dump, rtl_log):
                 if (trace_entry_1.pc == trace_entry_2.pc and trace_entry_1.binary == trace_entry_2.binary):
                     f = open(rtl_log, "a")
                     a = "{0}\t\t{1}\t\t{2}\t\t{3}\t\t{4}\t\t{5}\t{6}\t{7}\n"
-                    f.write(a.format(trace_entry_1.time,trace_entry_1.cycle,trace_entry_1.pc, trace_entry_1.binary, trace_entry_2.instr_str, trace_entry_1.rs1, trace_entry_1.rs2, trace_entry_1.rd))
+                    b = "{0}\t\t{1}\t\t{2}\t\t{3}\t\t{4}\t\t{5}\t{6}\n"
+                    opcode = ["beq","bne","blt","bge","blyu","bgeu","sb","sd","sh","sw","fence","fence.i","ecall","break"]
+                    inst = trace_entry_2.instr_str.split()
+                    if inst[0] in opcode:
+                        f.write(b.format(trace_entry_1.time,trace_entry_1.cycle,trace_entry_1.pc, trace_entry_1.binary, trace_entry_2.instr_str, trace_entry_1.rs1, trace_entry_1.rs2))
+                    else:
+                        f.write(a.format(trace_entry_1.time,trace_entry_1.cycle,trace_entry_1.pc, trace_entry_1.binary, trace_entry_2.instr_str, trace_entry_1.rs1, trace_entry_1.rs2, trace_entry_1.rd))
                 elif (trace_entry_1.pc == trace_entry_2.pc and trace_entry_1.binary != trace_entry_2.binary):
                     if (trace_entry_1.binary[4:8] == trace_entry_2.binary):
                         f = open(rtl_log, "a")
                         a = "{0}\t\t{1}\t\t{2}\t\t{3}\t\t{4}\t\t\t{5}\t{6}\t{7}\n"
-                        f.write(a.format(trace_entry_1.time,trace_entry_1.cycle,trace_entry_1.pc, trace_entry_1.binary, trace_entry_2.instr_str, trace_entry_1.rs1, trace_entry_1.rs2, trace_entry_1.rd))
+                        b = "{0}\t\t{1}\t\t{2}\t\t{3}\t\t{4}\t\t{5}\t{6}\n"
+                        opcode = ["beq","bne","blt","bge","blyu","bgeu","sb","sd","sh","sw","fence","fence.i","ecall","break"]
+                        inst = trace_entry_2.instr_str.split()
+                        if inst[0] in opcode:
+                            f.write(b.format(trace_entry_1.time,trace_entry_1.cycle,trace_entry_1.pc, trace_entry_1.binary, trace_entry_2.instr_str, trace_entry_1.rs1, trace_entry_1.rs2))
+                        else:    
+                            f.write(a.format(trace_entry_1.time,trace_entry_1.cycle,trace_entry_1.pc, trace_entry_1.binary, trace_entry_2.instr_str, trace_entry_1.rs1, trace_entry_1.rs2, trace_entry_1.rd))
                         break
             #         else:
             #             print("dumy:", trace_entry_1.binary[4:7])
