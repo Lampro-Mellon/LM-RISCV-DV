@@ -1,5 +1,0 @@
-gloss/sys_exit.o: \
- /home/users/najeeb.afzal/Desktop/sifive/sifive_E21_rtl_eval_20G1.05.00/freedom-e-sdk/freedom-metal/gloss/sys_exit.c \
- /home/users/najeeb.afzal/Desktop/sifive/sifive_E21_rtl_eval_20G1.05.00/freedom-e-sdk/freedom-metal/metal/shutdown.h
-
-/home/users/najeeb.afzal/Desktop/sifive/sifive_E21_rtl_eval_20G1.05.00/freedom-e-sdk/freedom-metal/metal/shutdown.h:

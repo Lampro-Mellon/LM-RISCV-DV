@@ -1,8 +1,0 @@
-src/clock.o: \
- /home/users/najeeb.afzal/Desktop/sifive/sifive_E21_rtl_eval_20G1.05.00/freedom-e-sdk/freedom-metal/src/clock.c \
- /home/users/najeeb.afzal/Desktop/sifive/sifive_E21_rtl_eval_20G1.05.00/freedom-e-sdk/freedom-metal/metal/clock.h \
- /home/users/najeeb.afzal/Desktop/riscv64-unknown-elf-gcc-8.3.0-2019.08.0-x86_64-linux-ubuntu14/lib/gcc/riscv64-unknown-elf/8.3.0/include/stddef.h
-
-/home/users/najeeb.afzal/Desktop/sifive/sifive_E21_rtl_eval_20G1.05.00/freedom-e-sdk/freedom-metal/metal/clock.h:
-
-/home/users/najeeb.afzal/Desktop/riscv64-unknown-elf-gcc-8.3.0-2019.08.0-x86_64-linux-ubuntu14/lib/gcc/riscv64-unknown-elf/8.3.0/include/stddef.h:
