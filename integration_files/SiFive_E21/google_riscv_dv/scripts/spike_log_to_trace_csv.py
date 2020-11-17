@@ -27,9 +27,9 @@ sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 from riscv_trace_csv import *
 from lib import *
 
-RD_RE    = re.compile(r"(?P<pri>\d) 0x(?P<addr>[a-f0-9]+?) " \
+RD_RE    = re.compile(r"core.*:.*(?P<pri>\d) 0x(?P<addr>[a-f0-9]+?) " \
                       "\((?P<bin>.*?)\) (?P<reg>[xf]\s*\d*?) 0x(?P<val>[a-f0-9]+)")
-CORE_RE  = re.compile(r"core.*0x(?P<addr>[a-f0-9]+?) \(0x(?P<bin>.*?)\) (?P<instr>.*?)$")
+CORE_RE  = re.compile(r"core.*:\s*0x(?P<addr>[a-f0-9]+?) \(0x(?P<bin>.*?)\) (?P<instr>.*?)$")
 ILLE_RE  = re.compile(r"trap_illegal_instruction")
 
 LOGGER = logging.getLogger()
@@ -168,6 +168,9 @@ def read_spike_trace(path, full_trace):
                                     .replace(' ', '')) +
                          ':' + commit_match.group('val'))
         instr.mode = commit_match.group('pri')
+        if commit_match.group('val') == '00005555':
+          break
+
 
     # At EOF, we might have an instruction in hand. Yield it if so.
     if instr is not None:

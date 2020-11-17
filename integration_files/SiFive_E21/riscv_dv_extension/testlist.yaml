@@ -22,7 +22,7 @@
   description: >
     Arithmetic instruction test, no load/store/branch instructions
   gen_opts: >
-    +instr_cnt=500
+    +instr_cnt=1100
     +num_of_sub_program=0
     +directed_instr_0=riscv_int_numeric_corner_stream,4
     +no_fence=1
@@ -40,7 +40,7 @@
   iterations: 2
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=1000
+    +instr_cnt=50
     +num_of_sub_program=0
     +directed_instr_0=riscv_load_store_rand_instr_stream,4
   rtl_test: core_base_test
@@ -51,7 +51,7 @@
   iterations: 2
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=5000
+    +instr_cnt=50
     +num_of_sub_program=5
     +directed_instr_0=riscv_load_store_rand_instr_stream,4
     +directed_instr_1=riscv_loop_instr,4

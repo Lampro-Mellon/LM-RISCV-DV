@@ -314,26 +314,26 @@ class riscv_asm_program_gen extends uvm_object;
   // Major sections - init, stack, data, test_done etc.
   //---------------------------------------------------------------------------------------
 
-  virtual function void gen_program_header();
-    string str[$];
-    //instr_stream.push_back(".include \"user_define.h\"");
-    instr_stream.push_back(".globl _enter");
-    instr_stream.push_back(".section .text");
-    if (cfg.disable_compressed_instr) begin
-      instr_stream.push_back(".option norvc;");
-    end
-    //str.push_back(".include \"user_init.s\"");
-    str.push_back($sformatf("csrr x5, 0x%0x", MHARTID));
-    for (int hart = 0; hart < cfg.num_of_harts; hart++) begin
-      str = {str, $sformatf("li x6, %0d", hart),
-                  $sformatf("beq x5, x6, %0df", hart)};
-    end
-    gen_section("_enter", str);
-    for (int hart = 0; hart < cfg.num_of_harts; hart++) begin
-      instr_stream.push_back($sformatf("%0d: la x%0d, h%0d_enter", hart, cfg.scratch_reg, hart));
-      instr_stream.push_back($sformatf("jalr x0, x%0d, 0", cfg.scratch_reg));
-    end
-  endfunction
+virtual function void gen_program_header();
+string str[$];
+//instr_stream.push_back(".include \"user_define.h\"");
+instr_stream.push_back(".globl _enter");
+instr_stream.push_back(".section .text");
+if (cfg.disable_compressed_instr) begin
+instr_stream.push_back(".option norvc;");
+end
+//str.push_back(".include \"user_init.s\"");
+str.push_back($sformatf("csrr x5, 0x%0x", MHARTID));
+for (int hart = 0; hart < cfg.num_of_harts; hart++) begin
+str = {str, $sformatf("li x6, %0d", hart),
+            $sformatf("beq x5, x6, %0df", hart)};
+end
+gen_section("_enter", str);
+for (int hart = 0; hart < cfg.num_of_harts; hart++) begin
+instr_stream.push_back($sformatf("%0d: la x%0d, h%0d_enter", hart, cfg.scratch_reg, hart));
+instr_stream.push_back($sformatf("jalr x0, x%0d, 0", cfg.scratch_reg));
+end
+endfunction
 
   virtual function void gen_program_end(int hart);
     if (hart == 0) begin
@@ -693,17 +693,21 @@ class riscv_asm_program_gen extends uvm_object;
 
   // Generate "test_done" section, test is finished by an ECALL instruction
   // The ECALL trap handler will handle the clean up procedure before finishing the test.
+  // The test ending routine is modified both for core and spike
   virtual function void gen_test_done();
     string str = format_string("test_done:", LABEL_STR_LEN);
+    instr_stream.push_back(".option norvc");
     instr_stream.push_back(str);
-    instr_stream.push_back({indent, "li x6, 0x4000"});
-	instr_stream.push_back({indent, "li x7, 0x5555"});
-	instr_stream.push_back({indent, "sw x7, 0(x6)"});
-    //if (cfg.bare_program_mode) begin
-      //instr_stream.push_back({indent, "j write_tohost"});
-    //end else begin
-     // instr_stream.push_back({indent, "ecall"});
-    //end
+    instr_stream.push_back({indent, $sformatf("li x%0d, 0x4000", cfg.gpr[0])});
+    instr_stream.push_back({indent, $sformatf("li x%0d, 0x5555", cfg.gpr[1])});
+    instr_stream.push_back({indent, $sformatf("sw x%0d, 0(x%0d)", cfg.gpr[1], cfg.gpr[0])});
+    instr_stream.push_back({indent, "li gp, 1"});
+    if (cfg.bare_program_mode) begin
+      instr_stream.push_back({indent, "j write_tohost"});
+    end else begin
+      instr_stream.push_back({indent, "ecall"});
+      instr_stream.push_back(".option rvc"); 
+    end
   endfunction
 
   // Dump all GPR to the starting point of the program
@@ -1238,10 +1242,20 @@ class riscv_asm_program_gen extends uvm_object;
                                             STORE_AMO_ACCESS_FAULT,
                                             instr);
     end
-    pop_gpr_from_kernel_stack(MSTATUS, MSCRATCH, cfg.mstatus_mprv, cfg.sp, cfg.tp, instr);
-    instr.push_back("mret");
-    gen_section(get_label("store_fault_handler", hart), instr);
-  endfunction
+// This is a store_fault_handeling routine.
+// It takes the value of last PC, increments it by 4 and jumps at
+// instruction at incremented PC which is "li gp, 1"
+instr = {
+$sformatf("csrr  x%0d, 0x%0x", cfg.gpr[0], MEPC),
+$sformatf("addi  x%0d, x%0d, 4", cfg.gpr[0], cfg.gpr[0]),
+$sformatf("csrw  0x%0x, x%0d", MEPC, cfg.gpr[0]),
+$sformatf("csrr  x%0d, 0x%0x", cfg.gpr[0], MEPC),
+$sformatf("jalr  x%0d", cfg.gpr[0])
+};
+pop_gpr_from_kernel_stack(MSTATUS, MSCRATCH, cfg.mstatus_mprv, cfg.sp, cfg.tp, instr);
+instr.push_back("mret");
+gen_section(get_label("store_fault_handler", hart), instr);
+endfunction
 
   //---------------------------------------------------------------------------------------
   // Page table setup
@@ -1393,7 +1407,7 @@ class riscv_asm_program_gen extends uvm_object;
     end
   endfunction
 
-  // Generate a code section
+// Generate a code section
   virtual function void gen_section(string label, string instr[$]);
     string str;
     if(label != "") begin
@@ -1512,6 +1526,7 @@ class riscv_asm_program_gen extends uvm_object;
     `uvm_info(`gfn, $sformatf("Adding directed instruction stream:%0s ratio:%0d/1000", name, ratio),
               UVM_LOW)
   endfunction
+
 
   virtual function void get_directed_instr_stream();
     string args, val;

@@ -33,12 +33,12 @@ if { [info exists ::env(VERDI_HOME)] } {
 	# +IO_Only                   Dumps only IO port signals
 	# +by_file=<filename>        File to specify objects to add
 	# +all                       Dumps memories, MDA signals, structs, unions,power, and packed structs
-	fsdbDumpvars 0 tb_top +all
-	fsdbDumpSVA 0 tb_top.rvtop
+	fsdbDumpvars 0 TestDriver +all
+	fsdbDumpSVA 0 TestDriver
 } else {
 	# We don't have VERDI set up, so use VCS's standard dumping format.
 	dump -file "${sim_dir}/waves.vpd"
-	dump -add { tb_top } -depth 0 -aggregates -scope "."
+	dump -add { TestDriver } -depth 0 -aggregates -scope "."
 }
 
 run

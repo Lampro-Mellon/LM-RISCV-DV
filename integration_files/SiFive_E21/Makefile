@@ -30,7 +30,7 @@ COMPILE_OPTS        +=
 # Run time options for core RTL simulation
 SIM_OPTS            :=
 # Enable waveform dumping
-WAVES               := 0
+WAVES               := 1
 # Enable coverage dump
 COV                 := 0
 # RTL simulator
@@ -54,7 +54,7 @@ LSF_CMD             :=
 # Generator timeout limit in seconds
 TIMEOUT             := 1800
 # Privileged CSR YAML description file
-CSR_FILE            := yaml/SweRV_CSR.yaml
+CSR_FILE            := 
 # Pass/fail signature address at the end of test
 SIGNATURE_ADDR      := 0xd0580000
 # Linker File Path: if LINK is 1 then use user provided Linker File 

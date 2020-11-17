@@ -347,6 +347,30 @@ def gcc_compile(test_list, output_dir, isa, mabi, opts, gcc_user_extension_path,
     linker_path				: Path to linker file to be used in compilation
     debug_cmd  				: Produce the debug cmd log without running
   """
+########################################################
+##  generating assembly files for spike
+########################################################
+  # for test in test_list:
+  #   for i in range(0, test['iterations']):
+  #     if 'no_gcc' in test and test['no_gcc'] == 1:
+  #       continue
+  #     fin = open (("%s/asm_tests/%s_%d" %(output_dir, test['test'], i) + ".S"),"rt")
+  #     fout = open (("%s/asm_tests/%s_%d" %(output_dir, test['test'], i) + "_spike.S"),"wt")
+  #     do_write = True
+  #     for line in fin:
+  #       if do_write:
+  #         fout.write(line)
+  #       if "test_done:" in line:
+  #         do_write = False
+  #         continue
+  #       if (not do_write and "li gp, 1" in line):
+  #         do_write = True
+  #         fout.write(line)
+  #     fin.close()
+  #     fout.close()
+  # logging.info("Creating assembly files for spike")
+########################################################
+
   cwd = os.path.dirname(os.path.realpath(__file__))
   for test in test_list:
     for i in range(0, test['iterations']):

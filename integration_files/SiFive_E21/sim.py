@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """Regression script for running the Spike UVM testbench"""
-
+import re
 import argparse
 import os
 import random
@@ -37,15 +37,20 @@ _OLD_SYS_PATH = sys.path
 # as it started.
 try:
     sys.path = ([os.path.join(_CORE, 'riscv_dv_extension'),
-                 os.path.join(_RISCV_DV_ROOT, 'scripts')] +
+                 os.path.join(_RISCV_DV_ROOT, 'scripts'),
+                 _CORE] +
                 sys.path)
 
     from lib import (process_regression_list,
                      read_yaml, run_cmd, run_parallel_cmd,
                      setup_logging, RET_SUCCESS, RET_FAIL)
     import logging
+    # from A2 import *
 
     from spike_log_to_trace_csv import process_spike_sim_log
+    from riscv_trace_csv import (RiscvInstructionTraceCsv,
+                                RiscvInstructionTraceEntry)
+
     from ovpsim_log_to_trace_csv import process_ovpsim_sim_log
     from instr_trace_compare import compare_trace_csv
     #from nb_postfix import nb_post_fix
@@ -86,6 +91,73 @@ class SeedGen:
             assert not self.fixed
 
         return self.start_seed + iteration
+
+def trace_log(raw_rtl_log,dump, rtl_log):
+
+    #open and read file to read from (F1), file to match to (F2)
+    F1 = open( raw_rtl_log, "r") #File_1 is original file, has 2 columns
+    F2 = open( dump, "r") #.dump file
+
+    INSTR_RE_trace = re.compile(r"^\s*(?P<time>\d+)\s+(?P<cycle>\d+)\s+(?P<pc>[0-9a-f]+)\s+" r"(?P<bin>[0-9a-f]+)\s*(?P<rd>x\d{1,2}=0x[0-9a-f]+)\s+(?P<rs1>x\d{1,2}:0x[0-9a-f]+)\s+(?P<rs2>x\d{1,2}:0x[0-9a-f]+)\s+")
+    INSTR_RE_dump = re.compile(r"^(?P<pc>[0-9a-f]+):\s*(?P<bin>[0-9a-f]+)\s+(?P<instr>(?:\S+$|\S+\s+\S+)\s*?)")
+
+    trace_entry_1 = None
+    trace_entry_2 = None
+    trace_entry_1 = RiscvInstructionTraceEntry()
+    trace_entry_2 = RiscvInstructionTraceEntry()
+    instr_cnt_1 = 0
+    instr_cnt_2 = 0
+    f = open(rtl_log, "w")
+    f.write("Time\t\tCycle\t\tPC\t\t\tInsn\t\t\tDecoded_Insn\t\t\t\tRegister_Contents\n")
+    f.close()
+    for trace_line in F1:
+        # Extract instruction information   
+        instr_cnt_1 += 1
+        m = INSTR_RE_trace.search(trace_line)  
+        if m:
+            trace_entry_1.pc = m.group("pc")
+            trace_entry_1.binary = m.group("bin")
+            trace_entry_1.time = m.group("time")
+            trace_entry_1.cycle = m.group("cycle")
+            trace_entry_1.rd = m.group("rd")
+            trace_entry_1.rs1 = m.group("rs1")
+            trace_entry_1.rs2 = m.group("rs2")
+            F2 = open(dump, "r")
+        for dump_line in F2:
+            # Extract instruction information     
+            instr_cnt_2 += 1
+            n = INSTR_RE_dump.search(dump_line)
+            if n:
+                trace_entry_2.instr_str = n.group("instr")
+                trace_entry_2.pc = n.group("pc")
+                trace_entry_2.binary = n.group("bin")
+                counter = 0
+                if (trace_entry_1.pc == trace_entry_2.pc and trace_entry_1.binary == trace_entry_2.binary):
+                    f = open(rtl_log, "a")
+                    a = "{0}\t\t{1}\t\t{2}\t\t{3}\t\t{4}\t\t{5}\t{6}\t{7}\n"
+                    b = "{0}\t\t{1}\t\t{2}\t\t{3}\t\t{4}\t\t{5}\t{6}\n"
+                    opcode = ["beq","bne","blt","bge","blyu","bgeu","sb","sd","sh","sw","fence","fence.i","ecall","break"]
+                    inst = trace_entry_2.instr_str.split()
+                    if inst[0] in opcode:
+                        f.write(b.format(trace_entry_1.time,trace_entry_1.cycle,trace_entry_1.pc, trace_entry_1.binary, trace_entry_2.instr_str, trace_entry_1.rs1, trace_entry_1.rs2))
+                    else:
+                        f.write(a.format(trace_entry_1.time,trace_entry_1.cycle,trace_entry_1.pc, trace_entry_1.binary, trace_entry_2.instr_str, trace_entry_1.rs1, trace_entry_1.rs2, trace_entry_1.rd))
+                elif (trace_entry_1.pc == trace_entry_2.pc and trace_entry_1.binary != trace_entry_2.binary):
+                    if (trace_entry_1.binary[4:8] == trace_entry_2.binary):
+                        f = open(rtl_log, "a")
+                        a = "{0}\t\t{1}\t\t{2}\t\t{3}\t\t{4}\t\t\t{5}\t{6}\t{7}\n"
+                        b = "{0}\t\t{1}\t\t{2}\t\t{3}\t\t{4}\t\t{5}\t{6}\n"
+                        opcode = ["beq","bne","blt","bge","blyu","bgeu","sb","sd","sh","sw","fence","fence.i","ecall","break"]
+                        inst = trace_entry_2.instr_str.split()
+                        if inst[0] in opcode:
+                            f.write(b.format(trace_entry_1.time,trace_entry_1.cycle,trace_entry_1.pc, trace_entry_1.binary, trace_entry_2.instr_str, trace_entry_1.rs1, trace_entry_1.rs2))
+                        else:    
+                            f.write(a.format(trace_entry_1.time,trace_entry_1.cycle,trace_entry_1.pc, trace_entry_1.binary, trace_entry_2.instr_str, trace_entry_1.rs1, trace_entry_1.rs2, trace_entry_1.rd))
+                        break
+            #         else:
+            #             print("dumy:", trace_entry_1.binary[4:7])
+            # else: 
+            #     print("dump:", dump_line.strip())
 
 
 def subst_opt(string, name, enable, replacement):
@@ -404,8 +476,6 @@ def rtl_sim(sim_cmd, test_list, seed_gen, opts,
         	# Creating directory for test simulation log
         	os.makedirs(cmd[2], exist_ok=True)
         	cp_compiled_test(test, bin_dir, i)
-        	#logging.info("Running " + cmd[0])
-        	#print("Command: " + cmd[1] + "\n")
         	run_cmd(cmd[1], 300, check_return_code=True)
         	
         	'''it_cmd = subst_vars(sim_cmd, {'seed': str(seed_gen.gen(i))})
@@ -431,7 +501,8 @@ def compare_test_run(test, idx, iss, output_dir, report):
     test_name = test['test']
     elf = os.path.join(output_dir,
                        'instr_gen/asm_tests/{}.{}.o'.format(test_name, idx))
-
+    dump = os.path.join(output_dir,
+                       'instr_gen/asm_tests/{}_{}.dump'.format(test_name, idx))
     logging.info("Comparing %s/DUT sim result : %s" % (iss, elf))
 
     with open(report, 'a') as report_fd:
@@ -439,12 +510,15 @@ def compare_test_run(test, idx, iss, output_dir, report):
 
     rtl_dir = os.path.join(output_dir, 'rtl_sim',
                            '{}.{}'.format(test_name, idx))
-
+    instr_gen = os.path.join(output_dir, 'instr_gen',
+                           '{}.{}'.format(test_name, idx))
     #nb_log = os.path.join(rtl_dir, 'trace_core_nb_load.log')
+    raw_rtl_log = os.path.join(rtl_dir, 'raw_trace_core_00000000.log')
     rtl_log = os.path.join(rtl_dir, 'trace_core_00000000.log')
     #rtl_log_f = os.path.join(rtl_dir, 'trace_core.log')
     rtl_csv = os.path.join(rtl_dir, 'trace_core_00000000.csv')
     uvm_log = os.path.join(rtl_dir, 'sim.log')
+    trace_log(raw_rtl_log, dump, rtl_log)
 
     if not os.path.exists(rtl_log):
         with open(report, 'a') as report_fd:

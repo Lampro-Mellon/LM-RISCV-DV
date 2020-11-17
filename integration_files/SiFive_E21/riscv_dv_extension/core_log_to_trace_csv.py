@@ -94,7 +94,8 @@ def _process_core_sim_log_fd(log_fd, csv_fd, full_trace=True):
                                    .format(gpr_to_abi("x%0s" % c.group("rd")),
                                            c.group("rd_val")))
             trace_csv.write_trace_entry(trace_entry)
-
+            if c.group('rd_val') == '00005555':
+                break
     return instr_cnt
 
 
