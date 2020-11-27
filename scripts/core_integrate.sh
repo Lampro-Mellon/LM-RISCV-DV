@@ -5,7 +5,7 @@ BASE_DIR=$(cd ${SCRIPT_PATH}; cd ..; pwd)
 echo "BASE_DIR = ${BASE_DIR}"
 
 RV_DV_REMOTE='https://github.com/google/riscv-dv.git'
-RV_DV_COMMIT_SHA='0c640e3a9eb37a9d28b7f21104d0024b7148d7cf'
+RV_DV_COMMIT_SHA='3467c3777cb428b2e30b30b7f895a8fd73873d4f'
 
 SWERV_REMOTE='https://github.com/chipsalliance/Cores-SweRV.git'
 SWERV_COMMIT_SHA='7332edc0adaa7e9a0c842d169154429e8d987786'
@@ -75,7 +75,7 @@ cp -r "${CORES}/SweRV_EH1/design" "${INTEGRATED_CORES}/SweRV_EH1/rtl/";
 mv "${RV_DV}/src/riscv_instr_gen_config.sv" "${RV_DV}/src/default_riscv_instr_gen_config.sv";
 mv "${RV_DV}/src/riscv_asm_program_gen.sv" "${RV_DV}/src/default_riscv_asm_program_gen.sv";
 mv "${RV_DV}/scripts/gen_csr_test.py" "${RV_DV}/scripts/default_gen_csr_test.py";
-mv "${RV_DV}/scripts/spike_log_to_trace_csv.py" "${RV_DV}/scripts/default_spike_log_to_trace_csv.py";
+#mv "${RV_DV}/scripts/spike_log_to_trace_csv.py" "${RV_DV}/scripts/default_spike_log_to_trace_csv.py";
 mv "${RV_DV}/scripts/instr_trace_compare.py" "${RV_DV}/scripts/default_instr_trace_compare.py";
 
 cp "${INTEGRATION_FILES}/SweRV_EH1/google_riscv_dv/lm_run.py" "${RV_DV}/";
@@ -83,5 +83,5 @@ cp "${INTEGRATION_FILES}/SweRV_EH1/google_riscv_dv/lm_cov.py" "${RV_DV}/";
 cp "${INTEGRATION_FILES}/SweRV_EH1/google_riscv_dv/src/riscv_instr_gen_config.sv" "${RV_DV}/src/";
 cp "${INTEGRATION_FILES}/SweRV_EH1/google_riscv_dv/src/riscv_asm_program_gen.sv" "${RV_DV}/src/";
 cp "${INTEGRATION_FILES}/SweRV_EH1/google_riscv_dv/scripts/gen_csr_test.py" "${RV_DV}/scripts/";
-cp "${INTEGRATION_FILES}/SweRV_EH1/google_riscv_dv/scripts/spike_log_to_trace_csv.py" "${RV_DV}/scripts/";
+#cp "${INTEGRATION_FILES}/SweRV_EH1/google_riscv_dv/scripts/spike_log_to_trace_csv.py" "${RV_DV}/scripts/";
 cp "${INTEGRATION_FILES}/SweRV_EH1/google_riscv_dv/scripts/instr_trace_compare.py" "${RV_DV}/scripts/";
