@@ -1,6 +1,6 @@
 # Overview
 
-LM RISC-V DV is a verification environment which integrates [SweRV EH-1 Core](https://github.com/chipsalliance/Cores-SweRV) from Western Digital and a random assembly test generator from [Google's RISC-V DV](https://github.com/google/riscv-dv). This is a work in progress. At present it supports:
+LM RISC-V DV is a verification environment which integrates [SweRV EH-1 Core](https://github.com/chipsalliance/Cores-SweRV) from Western Digital and a random assembly test generator from [RISCV-DV](https://github.com/google/riscv-dv) which is a SV/UVM based instructions generator. This is a work in progress. At present it supports:
 
 - RTL Compilation
 - Random Assembly Test Generation
@@ -11,7 +11,7 @@ LM RISC-V DV is a verification environment which integrates [SweRV EH-1 Core](ht
 - Code Coverage Report Generation
 - Extraction of Functional Coverage
 
-You can watch the **youtube playlist** about the **introduction of LM RISC-V DV** and its **detailed environment demo**.
+You can watch the [**Youtube playlist**](https://www.youtube.com/watch?v=I8ISkRhPA5M&list=PLLBoDLOd3AMSHjz4mMJsWfSNV-TZBWArQ) about an [**Introduction to LM RISC-V DV**](https://www.youtube.com/watch?v=I8ISkRhPA5M&t=1s) and its [**Detailed Environment Demo**](https://www.youtube.com/watch?v=Pu-si58uosA&t=3s).
 
 [<img alt="LM RISC-V DV Thumbnail" src="docs/img/youtube_thumb.png" width=388 height=244>](https://www.youtube.com/watch?v=I8ISkRhPA5M&list=PLLBoDLOd3AMSHjz4mMJsWfSNV-TZBWArQ)
 
@@ -19,31 +19,31 @@ You can watch the **youtube playlist** about the **introduction of LM RISC-V DV*
 ## Directory Structure
 
 ```bash
-├── cores
-├── docs
-├── google_riscv_dv
-├── integrated_cores
-├── integration_files
-│   └── SweRV_EH1
-│       ├── directed_tests
-│       ├── google_riscv_dv
-│       ├── riscv_dv_extension
-│       ├── snapshots
-│       ├── testbench
-│       ├── yaml
+├── cores/
+├── docs/
+├── google_riscv_dv/
+├── integrated_cores/
+├── integration_files/
+│   └── SweRV_EH1/
+│       ├── directed_tests/
+│       ├── google_riscv_dv/
+│       ├── riscv_dv_extension/
+│       ├── snapshots/
+│       ├── testbench/
+│       ├── yaml/
 │       ├── cover.cfg
 │       ├── Makefile
 │       ├── sim.py
 │       ├── SweRV_EH1_flist.f
 │       └── waves.tcl
-└── scripts
+└── scripts/
     ├── core_integrate.sh
     └── toolchain_paths.sh
 ```
 
 ### [cores](./cores)/
 
-This directory is a place holder which will contain the cores in their original source forms cloned from their sites. Currently, LM RISC-V DV has been set up and tested for SweRV EH-1 core from Western Digital. When the cores are cloned, they will be checked out to the most recent versions which have been tested in this environment.  
+This directory is a place holder which will contain the cores in their original source forms cloned from their sites. Currently, LM RISC-V DV has been set up and tested for SweRV EH-1 core. When the cores are cloned, they will be checked out to the most recent versions which have been tested in this environment.  
 
 ### [docs](./docs)/
 
@@ -51,18 +51,18 @@ This directory is dedicated to all the documentation related to directory struct
 
 ### [google_riscv_dv](./google_riscv_dv)/
 
-Google's RISC-V DV is cloned into this repository. It contains the source for random assembly test generator written in SystemVerilog/UVM.
+RISCV-DV is cloned into this repository. It contains the source for random assembly test generator written in SystemVerilog/UVM.
 
 ### [integrated_cores](./integrated_cores)/
 
-After the cores and Google's RISC-V DV are cloned into their respective directories, the verification environment for the cores will be set up here with each core in its separate directory.
+After the cores and RISCV-DV are cloned into their respective directories, the verification environment for the cores will be set up here with each core in its separate directory.
 
 ### [integration files](./integration_files)/
 
 This directory contains files which will be used in setting up the verification environment. It contains:
 
 - Makefiles, python scripts, YAML files, linker files, and core configuration files
-- Modified Google's RISC-V DV Files specific for cores
+- Modified RISCV-DV files specific for cores
 - Modified RTL and Testbench files related to cores
 
 ### [scripts](./scripts)/
@@ -81,7 +81,7 @@ Following are the requirements for running the test generator and environment.
 - Python 3
 - SV and UVM 1.2 Simulator
 
-For manually building the `RISC-V GNU Toolchain`, visit the [riscv-gnu-toolchain](https://github.com/riscv/riscv-gnu-toolchain) repository on Github. Pre-built toolchains can be downloaded from [SiFive Software](https://www.sifive.com/software) Page. We are using `Spike ISS` for LM RISC-V DV. It can be manually built from the source which can be obtained from [riscv-isa-sim](https://github.com/riscv/riscv-isa-sim) repository. `Python 3.7` or above is recommended for the python scripts to work properly for test generation, compilation and simulation. According to Google's RISC-V Documentation, a number of `simulators` has been verified with the test generator including Synopsys VCS, Cadence Incisive/Xcelium, Mentor Questa, and Aldec Riviera-PRO.
+For manually building the `RISC-V GNU Toolchain`, visit the [riscv-gnu-toolchain](https://github.com/riscv/riscv-gnu-toolchain) repository on Github. Pre-built toolchains can be downloaded from [SiFive Software](https://www.sifive.com/software) Page. We are using `Spike ISS` for LM RISC-V DV. It can be manually built from the source which can be obtained from [riscv-isa-sim](https://github.com/riscv/riscv-isa-sim) repository. `Python 3.7` or above is recommended for the python scripts to work properly for test generation, compilation and simulation. According to RISCV-DV Documentation, a number of `simulators` has been verified with the test generator including Synopsys VCS, Cadence Incisive/Xcelium, Mentor Questa, and Aldec Riviera-PRO.
 
 ## Setup
 
@@ -98,7 +98,7 @@ Their is a [toolchain_paths.sh](./scripts/toolchain_paths.sh) script in [scripts
 source <path to toolchain_paths.sh>
 ```
 
-## Integration of Core with Google's RISC-V DV
+## Integration of Core with RISCV-DV
 
 [core_integrate.sh](./scripts/core_integrate.sh) is a `bash` script placed in [scripts/](./scripts). You just simply need to run the script through terminal for setting up the environment for the core.
 
@@ -108,7 +108,7 @@ source <path to toolchain_paths.sh>
 
 When the script is run, it:
 
-- clones the cores (SweRV EH-1 for now) and Google's RISC-V DV into their respective folders
+- clones the cores (SweRV EH-1 for now) and RISCV-DV into their respective folders
 - checkouts the sources to the lastest tested commit versions
 - takes the required RTL and Testbench sources from [cores](./cores) and integration files, and set up the environment in [integrated_cores](./integrated_cores)
 
@@ -120,10 +120,10 @@ This is a work in progress. We'd like to accept your contributions to this proje
 
 ## Acknowledgement
 
-- [Google's RISC-V DV](https://github.com/google/riscv-dv)
+- [RISCV-DV](https://github.com/google/riscv-dv)
 - [SweRV EH-1 Core (Western Digital)](https://github.com/chipsalliance/Cores-SweRV)
 - [Ibex core (lowRISC)](https://github.com/lowRISC/ibex)
 
 ## Contact
 
-If you have any queries, feel free to contact us via [Contact](http://www.lampromellon.com/contact-us.php) page on [Lampro Mellon](http://www.lampromellon.com)
+If you have any queries, feel free to contact us at hardware@lampromellon.com or contact page on our site [Lampro Mellon](http://www.lampromellon.com).
