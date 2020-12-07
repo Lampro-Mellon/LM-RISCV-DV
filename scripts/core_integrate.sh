@@ -1,4 +1,20 @@
 #!/bin/bash
+# 
+# //////////////////////////////////////////////////////////////////////
+#    Copyright [2020] [Lampro Mellon]
+# 
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+# //////////////////////////////////////////////////////////////////////
 
 SCRIPT_PATH=$( dirname "${BASH_SOURCE[0]}")
 BASE_DIR=$(cd ${SCRIPT_PATH}; cd ..; pwd)
@@ -18,8 +34,8 @@ RV_DV="${BASE_DIR}/google_riscv_dv"
 SWERV_LOCAL="${CORES}/SweRV_EH1"
 
 
-# Clone Google's RISC-V DV if it does not exist
-printf "Checking for Google's RISC-V DV with COMMIT ID: ${RV_DV_COMMIT_SHA} ...\n\n"
+# Clone RISCV-DV if it does not exist
+printf "Checking for RISCV-DV with COMMIT ID: ${RV_DV_COMMIT_SHA} ...\n\n"
 if [ -d "${RV_DV}" ] && [ -d "${RV_DV}/.git" ]
 then
     printf "${RV_DV}/ is already a git repository \n"
