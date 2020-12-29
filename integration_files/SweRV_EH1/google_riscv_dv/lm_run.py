@@ -32,7 +32,7 @@ from scripts.sail_log_to_trace_csv import *
 from scripts.instr_trace_compare import *
 
 from types import SimpleNamespace
-
+from pathlib import Path
 LOGGER = logging.getLogger()
 
 
@@ -364,10 +364,14 @@ def gcc_compile(test_list, output_dir, isa, mabi, opts, gcc_user_extension_path,
       if not os.path.isfile(asm) and not debug_cmd:
         logging.error("Cannot find assembly test: %s\n", asm)
         sys.exit(RET_FAIL)
-      # gcc comilation
+      test_name = test.get('test')
+      cust_linker_path = "riscv_dv_extension/linker_scripts/%s.ld" % test_name
+      if os.path.exists(cust_linker_path):
+        linker_path = cust_linker_path
       cmd = ("%s -static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles %s \
-             -I%s -T%s %s -o %s" % \
-             (get_env_var("RISCV_GCC", debug_cmd = debug_cmd), asm, gcc_user_extension_path, linker_path, opts, elf))
+            -I%s -T%s %s -o %s" % \
+            (get_env_var("RISCV_GCC", debug_cmd = debug_cmd), asm, gcc_user_extension_path, linker_path, opts, elf))
+  
       if 'gcc_opts' in test:
         cmd += test['gcc_opts']
       if 'gen_opts' in test:
@@ -389,6 +393,8 @@ def gcc_compile(test_list, output_dir, isa, mabi, opts, gcc_user_extension_path,
       run_cmd_output(cmd.split(), debug_cmd = debug_cmd)
       
       # Generating .exe
+      if os.path.exists(cust_linker_path):
+        linker_path = cust_linker_path
       cmd = ("%s -m elf32lriscv --discard-none -T%s -o %s %s" % (get_env_var("RISCV_LD", debug_cmd = debug_cmd), linker_path, exe, elf))
       run_cmd_output(cmd.split(), debug_cmd = debug_cmd)
       
@@ -425,6 +431,8 @@ def run_assembly(asm_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   # TODO (Haroon): Enable it after setting up spike simulation for directed asm tests
   # report = ("%s/iss_regr.log" % output_dir).rstrip()
   asm = re.sub(r"^.*\/", "", asm_test)
+  name_asm = asm.split(".")
+  test = name_asm[0]
   if asm_test.endswith(".s"):
   	asm = re.sub(r"\.s$", "", asm)
   else:
@@ -440,15 +448,16 @@ def run_assembly(asm_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   # iss_list = iss_opts.split(",")
   run_cmd("mkdir -p %s/directed_asm_tests" % output_dir)
   logging.info("Compiling assembly test : %s" % asm_test)
-
+  cust_linker_path = Path("directed_tests/asm/%s.ld" % test)
   # gcc compilation
   #logging.info("Generating elf")
   if asm_test.endswith(".S"):
-  	cmd = ("%s -static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles %s -I%s -T%s %s -o %s " % (get_env_var("RISCV_GCC", debug_cmd = debug_cmd), asm_test,
-			gcc_user_extension_path, linker_path, gcc_opts, elf))
-  	cmd += (" -march=%s" % isa)
-  	cmd += (" -mabi=%s" % mabi)
-  	run_cmd_output(cmd.split(), debug_cmd = debug_cmd)    
+    if os.path.exists(cust_linker_path):
+      linker_path = cust_linker_path
+    cmd = ("%s -static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles %s -I%s -T%s %s -o %s " % (get_env_var("RISCV_GCC", debug_cmd = debug_cmd), asm_test, gcc_user_extension_path, linker_path, gcc_opts, elf))
+    cmd += (" -march=%s" % isa)
+    cmd += (" -mabi=%s" % mabi)
+    run_cmd_output(cmd.split(), debug_cmd = debug_cmd)    
   elif asm_test.endswith(".s"):
   #TODO (Najeeb do linked elf gen for spike)
     cmd = ("%s/bin/riscv64-unknown-elf-cpp -I%s %s > %s" % (get_env_var("RISCV_TOOLCHAIN", debug_cmd = debug_cmd), gcc_user_extension_path, asm_test, cpp_s))
@@ -462,6 +471,8 @@ def run_assembly(asm_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   run_cmd_output(cmd.split(), debug_cmd = debug_cmd)
   
   # Generating .exe
+  if os.path.exists(cust_linker_path):
+    linker_path = cust_linker_path
   cmd = ("%s -m elf32lriscv --discard-none -T%s -o %s %s" % (get_env_var("RISCV_LD", debug_cmd = debug_cmd), linker_path, exe, elf))
   run_cmd_output(cmd.split(), debug_cmd = debug_cmd)
   
@@ -511,13 +522,17 @@ def run_assembly_from_dir(asm_test_dir, iss_yaml, isa, mabi, gcc_opts, iss,
   """
   # TODO (Haroon): Make it work for both assembly extensions (.s and .S)
   result = run_cmd("find %s -name \"*.S\" -o -name \"*.s\"" % asm_test_dir)
+  test_name = test_entry.get('test')
+  cust_linker_path = Path("directed_tests/asm/%s.ld" % test_name)
   if result:
     asm_list = result.splitlines()
     logging.info("Found %0d assembly tests under %s" %
                  (len(asm_list), asm_test_dir))
     for asm_file in asm_list:
+      if os.path.exists(cust_linker_path):
+        linker_path = cust_linker_path
       run_assembly(asm_file, iss_yaml, isa, mabi, gcc_opts, iss, output_dir,
-                   gcc_user_extension_path, linker_path, setting_dir, debug_cmd)
+                  gcc_user_extension_path, linker_path, setting_dir, debug_cmd)
       # TODO (Haroon): Enable it after setting up spike simulation for directed asm tests
       # if "," in iss:
       #   report = ("%s/iss_regr.log" % output_dir).rstrip()
@@ -552,12 +567,15 @@ def run_c(c_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   # report = ("%s/iss_regr.log" % output_dir).rstrip()
   c = re.sub(r"^.*\/", "", c_test)
   c = re.sub(r"\.c$", "", c)
+  name_c = c.split(".")
+  test = name_c[0]
   prefix = ("%s/directed_c_tests/%s"  % (output_dir, c))
   elf = prefix + ".o"
   binary = prefix + ".bin"
   exe = prefix + ".exe"
   dump = prefix + ".dump"
   program_hex = ("%s/directed_c_tests/program_%s.hex"  % (output_dir, c))
+  cust_linker_path = Path("directed_tests/c/%s.ld" % test)
   # TODO (Haroon): Enable it after setting up spike simulation for directed c tests
   # iss_list = iss_opts.split(",")
   run_cmd("mkdir -p %s/directed_c_tests" % output_dir)
@@ -566,8 +584,10 @@ def run_c(c_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   # gcc compilation
   #logging.info("Generating elf")
   #TODO(Najeeb do linked elf generation)
+  if os.path.exists(cust_linker_path):
+    linker_path = cust_linker_path
   cmd = ("%s -I%s -T%s -nostdlib -nostartfiles %s -march=%s -mabi=%s %s -o %s " % \
-         (get_env_var("RISCV_GCC", debug_cmd = debug_cmd), gcc_user_extension_path, linker_path, gcc_opts, isa, mabi, c_test, elf))
+        (get_env_var("RISCV_GCC", debug_cmd = debug_cmd), gcc_user_extension_path, linker_path, gcc_opts, isa, mabi, c_test, elf))
   run_cmd_output(cmd.split(), debug_cmd = debug_cmd)
   
   # Generating Binary
@@ -575,6 +595,8 @@ def run_c(c_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   run_cmd_output(cmd.split(), debug_cmd = debug_cmd)
   
   # Generating .exe
+  if os.path.exists(cust_linker_path):
+    linker_path = cust_linker_path
   cmd = ("%s -m elf32lriscv --discard-none -T%s -o %s %s" % (get_env_var("RISCV_LD", debug_cmd = debug_cmd), linker_path, exe, elf))
   run_cmd_output(cmd.split(), debug_cmd = debug_cmd)
   
@@ -630,6 +652,7 @@ def run_c_from_dir(c_test_dir, iss_yaml, isa, mabi, gcc_opts, iss,
       run_c(c_file, iss_yaml, isa, mabi, gcc_opts, iss, output_dir,
             setting_dir, debug_cmd)
       # TODO (Haroon): Enable it after setting up spike simulation for directed c tests
+      # TODO (Amna): Arguments in the run_c function call are not proper, if needed update accordingly
       if "," in iss:
         report = ("%s/iss_regr.log" % output_dir).rstrip()
         save_regr_report(report)

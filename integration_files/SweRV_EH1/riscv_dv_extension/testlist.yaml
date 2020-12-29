@@ -37,29 +37,39 @@
   gcc_opts: -g -O3 -funroll-all-loops
   iterations: 1
   rtl_test: core_base_test_benchmark
+  no_iss: 1
+  no_post_compare: 1
 
 - test: cmark_iccm
   c_tests: directed_tests/c/cmark_iccm.c
   gcc_opts: -g -O3 -funroll-all-loops
   iterations: 1
   rtl_test: core_base_test_benchmark
-
+  no_iss: 1
+  no_post_compare: 1
+  
 - test: c_sample
   c_tests: directed_tests/c/c_sample.c
   gcc_opts: -g -O3 -funroll-all-loops
   iterations: 1
   rtl_test: core_base_test_benchmark
+  no_iss: 1
+  no_post_compare: 1
 
 - test: hello_world
   asm_tests: directed_tests/asm/hello_world.s
   iterations: 1
   rtl_test: core_base_test_benchmark
+  no_iss: 1
+  no_post_compare: 1
 
 - test: hello_world_dccm
   asm_tests: directed_tests/asm/hello_world_dccm.s
   iterations: 1
   rtl_test: core_base_test_benchmark
-
+  no_iss: 1
+  no_post_compare: 1
+  
 - test: riscv_arithmetic_basic_test
   description: >
     Arithmetic instruction test, no load/store/branch instructions

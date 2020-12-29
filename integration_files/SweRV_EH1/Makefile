@@ -63,12 +63,7 @@ SIGNATURE_ADDR      := 0xd0580000
 # else use linker file from google's riscv-dv (scripts/link.ld)
 LINK				:= 1
 # provide specific link file
-ifeq (,$(wildcard riscv_dv_extension/linker_scripts/$(TEST).ld))
-	# path to custom linker file
-	LINK_FILE	= riscv_dv_extension/link.ld 
-else
-	LINK_FILE = riscv_dv_extension/linker_scripts/$(TEST).ld
-endif
+LINK_FILE	= riscv_dv_extension/link.ld
 # User Extension Directory for GCC Compilation
 GCC_USER_EXT_PATH	:= $(realpath snapshots/default)
 
