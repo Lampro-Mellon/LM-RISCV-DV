@@ -644,15 +644,18 @@ def run_c_from_dir(c_test_dir, iss_yaml, isa, mabi, gcc_opts, iss,
     debug_cmd       		: Produce the debug cmd log without running
   """
   result = run_cmd("find %s -name \"*.c\"" % c_test_dir)
+  test_name = test_entry.get('test')
+  cust_linker_path = Path("directed_tests/c/%s.ld" % test_name)
   if result:
     c_list = result.splitlines()
     logging.info("Found %0d c tests under %s" %
                  (len(c_list), c_test_dir))
     for c_file in c_list:
-      run_c(c_file, iss_yaml, isa, mabi, gcc_opts, iss, output_dir,
+      if os.path.exists(cust_linker_path):
+        linker_path = cust_linker_path
+      run_c(c_file, iss_yaml, isa, mabi, gcc_opts, iss, output_dir, gcc_user_extension_path, linker_path,
             setting_dir, debug_cmd)
       # TODO (Haroon): Enable it after setting up spike simulation for directed c tests
-      # TODO (Amna): Arguments in the run_c function call are not proper, if needed update accordingly
       if "," in iss:
         report = ("%s/iss_regr.log" % output_dir).rstrip()
         save_regr_report(report)
@@ -1149,3 +1152,4 @@ def main():
 
 if __name__ == "__main__":
   main()
+
