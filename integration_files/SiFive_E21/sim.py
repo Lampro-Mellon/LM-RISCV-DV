@@ -53,7 +53,7 @@ try:
 
     from ovpsim_log_to_trace_csv import process_ovpsim_sim_log
     from instr_trace_compare import compare_trace_csv
-    #from nb_postfix import nb_post_fix
+    from core_trace_correction import nb_post_fix
     import freedom_bin2hex 
 
     from core_log_to_trace_csv import process_core_sim_log, check_core_uvm_log
@@ -136,7 +136,7 @@ def trace_log(raw_rtl_log,dump, rtl_log):
                     f = open(rtl_log, "a")
                     a = "{0}\t\t{1}\t\t{2}\t\t{3}\t\t{4}\t\t{5}\t{6}\t{7}\n"
                     b = "{0}\t\t{1}\t\t{2}\t\t{3}\t\t{4}\t\t{5}\t{6}\n"
-                    opcode = ["beq","bne","blt","bge","bltu","bgeu","sb","sd","sh","sw","fence","fence.i","ecall","break"]
+                    opcode = ["beq","bne","blt","bge","bltu","bgeu","sb","sd","sw","swsp","sh","fence","fence.i","ecall","break"]
                     inst = trace_entry_2.instr_str.split()
                     if inst[0] in opcode:
                         f.write(b.format(trace_entry_1.time,trace_entry_1.cycle,trace_entry_1.pc, trace_entry_1.binary, trace_entry_2.instr_str, trace_entry_1.rs1, trace_entry_1.rs2))
@@ -147,7 +147,7 @@ def trace_log(raw_rtl_log,dump, rtl_log):
                         f = open(rtl_log, "a")
                         a = "{0}\t\t{1}\t\t{2}\t\t{3}\t\t{4}\t\t\t{5}\t{6}\t{7}\n"
                         b = "{0}\t\t{1}\t\t{2}\t\t{3}\t\t{4}\t\t{5}\t{6}\n"
-                        opcode = ["beq","bne","blt","bge","btyu","c.beqz","bgeu","sb","sd","sh","c.sw","fence","fence.i","ecall","break"]
+                        opcode = ["beq","bne","blt","bge","bltu","c.beqz","bgeu","sb","sd","c.sw","c.swsp","sh","fence","fence.i","ecall","break"]
                         inst = trace_entry_2.instr_str.split()
                         if inst[0] in opcode:
                             f.write(b.format(trace_entry_1.time,trace_entry_1.cycle,trace_entry_1.pc, trace_entry_1.binary, trace_entry_2.instr_str, trace_entry_1.rs1, trace_entry_1.rs2))
@@ -512,10 +512,10 @@ def compare_test_run(test, idx, iss, output_dir, report):
                            '{}.{}'.format(test_name, idx))
     instr_gen = os.path.join(output_dir, 'instr_gen',
                            '{}.{}'.format(test_name, idx))
-    #nb_log = os.path.join(rtl_dir, 'trace_core_nb_load.log')
+    nb_log = os.path.join(rtl_dir, 'trace_core_rf_wrenx_00000000.log')
     raw_rtl_log = os.path.join(rtl_dir, 'raw_trace_core_00000000.log')
     rtl_log = os.path.join(rtl_dir, 'trace_core_00000000.log')
-    #rtl_log_f = os.path.join(rtl_dir, 'trace_core.log')
+    rtl_log_f = os.path.join(rtl_dir, 'trace_core.log')
     rtl_csv = os.path.join(rtl_dir, 'trace_core_00000000.csv')
     uvm_log = os.path.join(rtl_dir, 'sim.log')
     trace_log(raw_rtl_log, dump, rtl_log)
@@ -524,7 +524,7 @@ def compare_test_run(test, idx, iss, output_dir, report):
         with open(report, 'a') as report_fd:
             report_fd.write('{} does not exist\n'.format(rtl_log))
         return False
-    '''
+    
     try:
         # Fix RTL log file with non blocking load values
         nb_post_fix(rtl_log_f, rtl_log, nb_log)
@@ -533,10 +533,10 @@ def compare_test_run(test, idx, iss, output_dir, report):
             report_fd.write('Post-fixing of Log failed: {}\n'.format(e))
 
         return False
-    '''
+    
     try:
         # Convert the RTL log file to a trace CSV.
-        process_core_sim_log(rtl_log, rtl_csv, 1)
+        process_core_sim_log(rtl_log_f, rtl_csv, 1)
     except RuntimeError as e:
         with open(report, 'a') as report_fd:
             report_fd.write('Log processing failed: {}\n'.format(e))

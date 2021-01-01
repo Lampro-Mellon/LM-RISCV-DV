@@ -47,6 +47,7 @@ module tracer (
   input logic [ 1:0] rvfi_mode,
 */
   input logic        rvfi_valid,
+  input logic        rvfi_rd_wren,
   input logic [31:0] rvfi_insn,
   input logic [ 4:0] rvfi_rs1_addr,
   input logic [ 4:0] rvfi_rs2_addr,
@@ -81,7 +82,9 @@ module tracer (
   import tracer_pkg::*;
 
   int          file_handle;
+  int          file_handle_rf;
   string       file_name;
+  string       file_name_rf;
 
   int unsigned cycle;
   string       decoded_str;
@@ -111,51 +114,31 @@ module tracer (
       $display("%m: Writing execution trace to %s", file_name);
       file_handle = $fopen(file_name, "w");
       $fwrite(file_handle, "\t\t\tTime\t\t\tCycle\t\tPC\t\tInsn\tDecoded instruction\tRegister contents\n");
-      
-      
-    end
-  
-  // $fwrite(file_handle,"%t\t %d  %h\t %h\t\t ", $time,cycle,rvfi_pc_rdata, rvfi_insn);
-
-   $fwrite(file_handle,"%t\t %d  %h\t %h\t\t %s=0x%08x\t %s:0x%08x\t %s:0x%08x\t", $time,cycle,rvfi_pc_rdata, rvfi_insn, reg_addr_to_str(rvfi_rd_addr), rvfi_rd_wdata, reg_addr_to_str(rvfi_rs1_addr), rvfi_rs1_rdata, reg_addr_to_str(rvfi_rs2_addr), rvfi_rs2_rdata);
-
-/*   
-    // Write compressed instructions as four hex digits (16 bit word), and
-    // uncompressed ones as 8 hex digits (32 bit words).
-    if (insn_is_compressed) begin
-      rvfi_insn_str = $sformatf("%h", rvfi_insn[15:0]);
-    end else begin
-      rvfi_insn_str = $sformatf("%h", rvfi_insn);
     end
 
-    $fwrite(file_handle, "%15t\t%d\t%h\t%s\t%s\t", $time, cycle, rvfi_pc_rdata, rvfi_insn_str, decoded_str);
-
-    if ((data_accessed & RS1) != 0) begin
-      $fwrite(file_handle, " %s:0x%08x", reg_addr_to_str(rvfi_rs1_addr), rvfi_rs1_rdata);
-    end
-    if ((data_accessed & RS2) != 0) begin
-      $fwrite(file_handle, " %s:0x%08x", reg_addr_to_str(rvfi_rs2_addr), rvfi_rs2_rdata);
-    end
-/*
-    if ((data_accessed & RS3) != 0) begin
-      $fwrite(file_handle, " %s:0x%08x", reg_addr_to_str(rvfi_rs3_addr), rvfi_rs3_rdata);
-    end
-
-    if ((data_accessed & RD) != 0) begin
-      $fwrite(file_handle, " %s=0x%08x", reg_addr_to_str(rvfi_rd_addr), rvfi_rd_wdata);
-    end
-    if ((data_accessed & MEM) != 0) begin
-      $fwrite(file_handle, " PA:0x%08x", rvfi_mem_addr);
-
-      if (rvfi_mem_rmask != 4'b000) begin
-        $fwrite(file_handle, " store:0x%08x", rvfi_mem_wdata);
-      end
-      if (rvfi_mem_wmask != 4'b000) begin
-        $fwrite(file_handle, " load:0x%08x", rvfi_mem_rdata);
-      end
-    end
-*/
+    $fwrite(file_handle,"%t\t %d  %h\t %h\t\t %s=0x%08x\t %s:0x%08x\t %s:0x%08x\t", $time,cycle,rvfi_pc_rdata, rvfi_insn, reg_addr_to_str(rvfi_rd_addr), rvfi_rd_wdata, reg_addr_to_str(rvfi_rs1_addr), rvfi_rs1_rdata, reg_addr_to_str(rvfi_rs2_addr), rvfi_rs2_rdata);
     $fwrite(file_handle, "\n");
+  endfunction
+
+  always @(posedge clk_i) begin
+  	if (rvfi_rd_wren) begin
+      print_dumpline_rf_wren();
+    end
+  end  
+  function automatic void print_dumpline_rf_wren();
+
+    if (file_handle_rf == 32'h0) begin
+      string file_name_base_rf = "rf_wren_trace_core";
+      $value$plusargs("tracer_file_base_rf_wrenx=%s", file_name_base_rf);
+      $sformat(file_name_rf, "%s_%h.log", file_name_base_rf, hart_id_i);
+      $display("%m: Writing execution trace to %s", file_name_rf);
+      file_handle_rf = $fopen(file_name_rf, "w");
+      $fwrite(file_handle_rf, "\t\t\tTime\t\t\tDestination Register (rd)\n");
+    end
+
+    $fwrite(file_handle_rf,"%t\t\t %s=0x%08x\t", $time, reg_addr_to_str(~system.tile.core.rf._EVAL_7__EVAL_10_addr), rvfi_rd_wdata);
+    $fwrite(file_handle_rf, "\n");
+
   endfunction
   
   // Format register address with "x" prefix, left-aligned to a fixed width of 3 characters.
