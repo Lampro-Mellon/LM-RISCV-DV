@@ -65,6 +65,7 @@
         +verbose
         +testfile=program.hex
         +tracer_file_base=<sim_dir>/raw_trace_core
+        +tracer_file_base_rf_wrenx=<sim_dir>/trace_core_rf_wrenx
         -l <sim_dir>/sim.log
     wave_opts: >
       -ucli -do <cwd>/waves.tcl
