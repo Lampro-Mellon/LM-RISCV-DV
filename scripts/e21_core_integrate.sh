@@ -63,9 +63,11 @@ cp "${INTEGRATION_FILES}/SiFive_E21/google_riscv_dv/scripts/instr_trace_compare.
 ##copy local E21 to integrated cores
 cp -r "${CORES}/sifive_E21/rtl" "${INTEGRATED_CORES}/SiFive_E21/rtl";
 mv "${INTEGRATED_CORES}/SiFive_E21/rtl/testbench" "${INTEGRATED_CORES}/SiFive_E21";
-cp "${INTEGRATION_FILES}/SiFive_E21/testbench.F" "${INTEGRATED_CORES}/SiFive_E21";
+mv "${INTEGRATED_CORES}/SiFive_E21/rtl/testbench.F" "${INTEGRATED_CORES}/SiFive_E21";
 mv "${INTEGRATED_CORES}/SiFive_E21/rtl/sifive_insight" "${INTEGRATED_CORES}/SiFive_E21";
 mv "${INTEGRATED_CORES}/SiFive_E21/rtl/sifive_insight.F" "${INTEGRATED_CORES}/SiFive_E21";
+cp "${INTEGRATION_FILES}/SiFive_E21/tracer_files.F" "${INTEGRATED_CORES}/SiFive_E21";
+cp "${INTEGRATION_FILES}/SiFive_E21/top.F" "${INTEGRATED_CORES}/SiFive_E21";
 rm -rf "${INTEGRATED_CORES}/SiFive_E21/rtl/top.F";
 ## not needed for now
 mv "${INTEGRATED_CORES}/SiFive_E21/rtl/implementation" "${INTEGRATED_CORES}/SiFive_E21/misc";

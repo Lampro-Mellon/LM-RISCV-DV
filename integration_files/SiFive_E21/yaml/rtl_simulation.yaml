@@ -25,7 +25,10 @@
          +rad  
          +v2k  
          +vcs+lic+wait  
-         +vc+list  
+         +vc+list
+         -F rtl/design.F
+         -F rtl/memories.F
+         -F tracer_files.F  
          -F top.F  
          +define+RANDOM=\"1'b0\"  
          +define+RANDOMIZE_MEM_INIT  

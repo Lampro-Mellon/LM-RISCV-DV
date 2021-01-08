@@ -153,6 +153,18 @@ SECTIONS
         KEEP (*(.metal.dtors .metal.dtors.*))
     } >rom : rom
 
+    .rodata : {
+        *(.rdata)
+        *(.rodata .rodata.*)
+        *(.gnu.linkonce.r.*)
+        . = ALIGN(8);
+        *(.srodata.cst16)
+        *(.srodata.cst8)
+        *(.srodata.cst4)
+        *(.srodata.cst2)
+        *(.srodata .srodata.*)
+
+    } >rom :rom
 
     /* ITIM SECTION
      *

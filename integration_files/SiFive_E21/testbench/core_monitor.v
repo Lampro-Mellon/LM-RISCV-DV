@@ -31,24 +31,17 @@
 
 module core_monitor (
     input [31:0] m_0_inst, input [31:0] m_0_rd1val, input [4:0] m_0_rd1src, input [31:0] m_0_rd0val, input [4:0] m_0_rd0src, input [0:0] m_0_wrenf, input [0:0] m_0_wrenx, input [31:0] m_0_wrdata, input [4:0] m_0_wrdst, input [31:0] m_0_pc, input [0:0] m_0_valid, input [31:0] m_0_timer, input [31:0] m_0_hartid, input [2:0] m_0_priv_mode, input [0:0] m_0_excpt, input [0:0] m_0_reset, input [0:0] m_0_clock);
-    
- /*      
-    initial begin
-    //    file_handle = $fopen(file_name, "w");
-     //   $fwrite(file_handle, "\t\tTime\t\t\tCycle\tPC\t\tInsn\tDecoded instruction\tRegister and memory contents\n");
-        //$write("pc instr Rd Rs1 Rs2", "\n");
-    end
-    always @(posedge m_0_clock) if (m_0_valid && !m_0_reset) begin
-        $write("%t, %h, %h, %h, %h, %h", $time, m_0_pc, m_0_inst, m_0_wrdata, m_0_rd0val, m_0_rd1val, "\n");
-        end
-*/
+  logic [4:0] rf_rd_addr;
+  logic [31:0] rf_rd_wdata;
+  assign rf_rd_wdata = system.tile.core.rf._EVAL_7__EVAL_10_data;
+  assign rf_rd_wren = system.tile.core.rf._EVAL_7__EVAL_10_en;
+  assign rf_rd_addr = system.tile.core.rf._EVAL_7__EVAL_10_addr;
 `ifdef USE_DPI
 `ifndef SYNTHESIS
     import "DPI-C" context function void core_monitor(input longint m_inst, input longint m_rd1val, input longint m_rd1src, input longint m_rd0val, input longint m_rd0src, input longint m_wrenf, input longint m_wrenx, input longint m_wrdata, input longint m_wrdst, input longint m_pc, input longint m_valid, input longint m_timer, input longint m_hartid, input longint m_priv_mode, input longint m_excpt);
     always @(posedge m_0_clock) if (!m_0_reset) begin
        core_monitor(m_0_inst, m_0_rd1val, m_0_rd1src, m_0_rd0val, m_0_rd0src, m_0_wrenf, m_0_wrenx, m_0_wrdata, m_0_wrdst, m_0_pc, m_0_valid, m_0_timer, m_0_hartid, m_0_priv_mode, m_0_excpt);
     end
-
 `endif
 `endif
 
@@ -67,13 +60,15 @@ tracer 	core_tracer(
   .rvfi_rs1_rdata	    (m_0_rd0val),               
   .rvfi_rs2_rdata		(m_0_rd1val),                
   .rvfi_rd_addr		    (m_0_wrdst),                
-  .rvfi_rd_wdata		(m_0_wrdata),
-  .rvfi_rd_wren 		(m_0_wrenx),               
+  .rvfi_rd_wdata		(rf_rd_wdata),
+  .rvfi_rd_wren 		(m_0_wrenx),
+  .rf_rd_wdata      (rf_rd_wdata),
+  .rf_rd_wren       (rf_rd_wren),
+  .rf_rd_addr       (rf_rd_addr),
   .rvfi_mem_addr		(32'h0),     
   .rvfi_mem_rmask		(4'hf),
   .rvfi_mem_wmask		(4'hf),       
   .rvfi_mem_rdata		(32'h0),
   .rvfi_mem_wdata		(32'h0)        
 );
-
 endmodule
