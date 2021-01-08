@@ -21,7 +21,7 @@ BASE_DIR=$(cd ${SCRIPT_PATH}; cd ..; pwd)
 echo "BASE_DIR = ${BASE_DIR}"
 
 RV_DV_REMOTE='https://github.com/google/riscv-dv.git'
-RV_DV_COMMIT_SHA='6d7df8893c2654527a9c0d24e37ec5a510089ff9'
+RV_DV_COMMIT_SHA='aa327f3544278654f49d2c54b01d31f2ae6a13dd'
 
 SWERV_REMOTE='https://github.com/chipsalliance/Cores-SweRV.git'
 SWERV_COMMIT_SHA='7332edc0adaa7e9a0c842d169154429e8d987786'
