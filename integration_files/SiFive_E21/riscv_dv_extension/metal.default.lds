@@ -8,7 +8,15 @@ OUTPUT_ARCH("riscv")
  */
 
 ENTRY(_enter)
-
+/*
+letter  attribute
+'r'     read
+'w'     write
+'x'     execute
+'a'     allocated
+'i'     initialized
+'!'     invert the sense of all following attributes
+*/
 MEMORY
 {
     itim (airwx) : ORIGIN = 0x80008000, LENGTH = 0x4000
@@ -24,6 +32,8 @@ PHDRS
     ram PT_LOAD;
     itim_init PT_LOAD;
     text PT_LOAD;
+    kernel_stack PT_LOAD;
+    data PT_LOAD;
 }
 
 SECTIONS
@@ -149,7 +159,7 @@ SECTIONS
         KEEP (*(.metal.dtors .metal.dtors.*))
     } >rom : rom
 
-    .rodata : {
+    .rodata : ALIGN(8) {
         *(.rdata)
         *(.rodata .rodata.*)
         *(.gnu.linkonce.r.*)
@@ -206,16 +216,22 @@ SECTIONS
      * ADDR and LOADADDR being 8-byte aligned.
      */
 
-    .data : ALIGN(8) {
-        *(.data .data.*)
+    
+    .data : ALIGN(16) {
+        *(.region_0)
+        *(.region_1)
         *(.gnu.linkonce.d.*)
-        . = ALIGN(8);
+        . = ALIGN(16);
         PROVIDE( __global_pointer$ = . + 0x800 );
         *(.sdata .sdata.* .sdata2.*)
         *(.gnu.linkonce.s.*)
-    } >ram AT>rom :ram_init
-
-    .tdata : ALIGN(8) {
+    } >rom :data
+    
+    .kernel_stack : ALIGN(16) {
+        *(.kernel_stack)
+    } >rom :kernel_stack
+    
+    .tdata : ALIGN(16) {
         PROVIDE( __tls_base = . );
 	*(.tdata .tdata.* .gnu.linkonce.td.*)
     } >ram AT>rom :tls :ram_init

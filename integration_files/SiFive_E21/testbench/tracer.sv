@@ -63,7 +63,10 @@ module tracer (
   input logic [ 3:0] rvfi_mem_rmask,
   input logic [ 3:0] rvfi_mem_wmask,
   input logic [31:0] rvfi_mem_rdata,
-  input logic [31:0] rvfi_mem_wdata
+  input logic [31:0] rvfi_mem_wdata,
+  input logic [4:0]  rf_rd_addr,    //	    system.tile.core.rf._EVAL_7__EVAL_10_addr;                
+  input logic [31:0] rf_rd_wdata,   //		  system.tile.core.rf._EVAL_7__EVAL_10_data;
+  input logic rf_rd_wren            // 	  	system.tile.core.rf._EVAL_7__EVAL_10_en;
 );
 
   // These signals are part of RVFI, but not used in this module currently.
@@ -121,7 +124,7 @@ module tracer (
   endfunction
 
   always @(posedge clk_i) begin
-  	if (rvfi_rd_wren) begin
+  	if (rf_rd_wren) begin
       print_dumpline_rf_wren();
     end
   end  
@@ -136,7 +139,7 @@ module tracer (
       $fwrite(file_handle_rf, "\t\t\tTime\t\t\tDestination Register (rd)\n");
     end
 
-    $fwrite(file_handle_rf,"%t\t\t %s=0x%08x\t", $time, reg_addr_to_str(~system.tile.core.rf._EVAL_7__EVAL_10_addr), rvfi_rd_wdata);
+    $fwrite(file_handle_rf,"%t\t\t %s=0x%08x\t", $time, reg_addr_to_str(~rf_rd_addr), rvfi_rd_wdata);
     $fwrite(file_handle_rf, "\n");
 
   endfunction

@@ -1,4 +1,2 @@
--F rtl/design.F
 -F testbench.F
--F rtl/memories.F
 -F sifive_insight.F
