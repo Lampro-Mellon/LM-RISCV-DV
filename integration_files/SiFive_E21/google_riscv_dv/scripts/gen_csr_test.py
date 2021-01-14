@@ -231,9 +231,9 @@ def gen_setup(test_file):
     test_file.write(".macro init\n")
     test_file.write(".endm\n")
     test_file.write(".section .text.init\n")
-    test_file.write(".globl _start\n")
+    test_file.write(".globl _enter\n")
     test_file.write(".option norvc\n")
-    test_file.write("_start:\n")
+    test_file.write("_enter:\n")
 
 
 def gen_csr_test_fail(test_file, end_addr):
@@ -247,11 +247,9 @@ def gen_csr_test_fail(test_file, end_addr):
       end_addr: address that should be written to at end of test
     """
     test_file.write(f"csr_fail:\n")
-    test_file.write(f"\taddi x5, x0, 1\n")
-    #test_file.write(f"\tj csr_fail\n")
-    test_file.write(f"csr_end:\n")
-    test_file.write(f"\tli x4, 0xd0580000\n")
-    test_file.write(f"\tsb x5, 0(x4)\n")
+    test_file.write("\tli x1, 0x4000\n")
+    test_file.write("\tli x2, 0x3333\n")
+    test_file.write("\tsw x2, 0(x1)\n")
 
 
 def gen_csr_test_pass(test_file, end_addr):
@@ -265,8 +263,10 @@ def gen_csr_test_pass(test_file, end_addr):
       end_addr: address that should be written to at end of test
     """
     test_file.write(f"csr_pass:\n")
-    test_file.write(f"\taddi x5, x0, 0xff\n")
-    test_file.write(f"\tj csr_end\n")
+    test_file.write("\tli x1, 0x4000\n")
+    test_file.write("\tli x2, 0x5555\n")
+    test_file.write("\tsw x2, 0(x1)\n")
+
 
 
 def gen_csr_instr(original_csr_map, csr_instructions, xlen,
