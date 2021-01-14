@@ -58,6 +58,7 @@ cp "${INTEGRATION_FILES}/SiFive_E21/google_riscv_dv/src/riscv_instr_gen_config.s
 cp "${INTEGRATION_FILES}/SiFive_E21/google_riscv_dv/src/riscv_asm_program_gen.sv" "${RV_DV}/src/riscv_asm_program_gen.sv";      #done
 cp "${INTEGRATION_FILES}/SiFive_E21/google_riscv_dv/scripts/spike_log_to_trace_csv.py" "${RV_DV}/scripts/";                     #done
 cp "${INTEGRATION_FILES}/SiFive_E21/google_riscv_dv/scripts/instr_trace_compare.py" "${RV_DV}/scripts/";
+cp "${INTEGRATION_FILES}/SiFive_E21/google_riscv_dv/scripts/gen_csr_test.py" "${RV_DV}/scripts/";
 
 ## assuming downloaded E21 is there in cores folder
 ##copy local E21 to integrated cores
