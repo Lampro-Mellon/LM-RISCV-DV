@@ -1,0 +1,14 @@
+# Copyright (C) 2020 SiFive Inc
+# SPDX-License-Identifier: Apache-2.0
+
+RISCV_ARCH = rv32imac
+RISCV_ABI = ilp32
+RISCV_CMODEL = medlow
+RISCV_SERIES = sifive-2-series
+
+TARGET_TAGS = rtl
+TARGET_DHRY_ITERS = 2000
+TARGET_CORE_ITERS = 5
+TARGET_FREERTOS_WAIT_MS = 10
+
+COREIP_MEM_WIDTH = 32
