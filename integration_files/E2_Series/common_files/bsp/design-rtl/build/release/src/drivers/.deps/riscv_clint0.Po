@@ -1,5 +1,0 @@
-src/drivers/riscv_clint0.o: \
- /home/users/najeeb.afzal/Desktop/sifive/sifive_E21_rtl_eval_20G1.05.00/freedom-e-sdk/freedom-metal/src/drivers/riscv_clint0.c \
- metal/machine/platform.h
-
-metal/machine/platform.h:
