@@ -40,7 +40,7 @@ ISS                 := spike
 # ISS runtime options
 ISS_OPTS            :=
 # ISA
-ISA                 := rv32imac
+ISA                 := rv32imc
 # Test name (default: hello_world)
 TEST                := riscv_arithmetic_basic_test
 TESTLIST            := riscv_dv_extension/testlist.yaml
@@ -68,7 +68,7 @@ else
 	LINK_FILE = riscv_dv_extension/linker_scripts/$(TEST).ld
 endif
 # User Extension Directory for GCC Compilation
-GCC_USER_EXT_PATH	:= $(realpath bsp/design-rtl)
+GCC_USER_EXT_PATH	:= 
 
 # This expands to '@' if VERBOSE is 0 or not set, and to the empty
 # string otherwise. Prefix commands with it in order that they only
@@ -407,7 +407,7 @@ fcov: fcov_sim fcov_core
 # Generate RISCV-DV functional coverage for core
 fcov_core:
 	$(verb)python3 ${GEN_DIR}/lm_cov.py \
-          --core swerv_eh1 \
+          --core E20 \
           --dir ${OUT-SEED}/rtl_sim \
           -o ${OUT-SEED}/fcov/fcov_core \
           --isa ${ISA} \

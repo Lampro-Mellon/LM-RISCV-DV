@@ -30,6 +30,6 @@ _finish:
 .data
 hw_data:
 .ascii "----------------------------------\n"
-.ascii "Hello World from SweRV EH1 @WDC !!\n"
+.ascii "Hello World !!\n"
 .ascii "----------------------------------\n"
 .byte 0
