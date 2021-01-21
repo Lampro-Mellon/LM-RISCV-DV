@@ -51,7 +51,6 @@ mv "${RV_DV}/scripts/instr_trace_compare.py" "${RV_DV}/scripts/default_instr_tra
 
 # copying common files
 cp -r "${INTEGRATION_FILES}/common_files/directed_tests" "${INTEGRATED_CORES}/E21";
-cp -r "${INTEGRATION_FILES}/common_files/bsp" "${INTEGRATED_CORES}/E21";
 cp -r ${INTEGRATION_FILES}/common_files/riscv_dv_extension/* "${INTEGRATED_CORES}/E21/riscv_dv_extension/";
 cp ${INTEGRATION_FILES}/common_files/yaml/* "${INTEGRATED_CORES}/E21/yaml"
 cp "${INTEGRATION_FILES}/common_files/sim.py" "${INTEGRATED_CORES}/E21"
