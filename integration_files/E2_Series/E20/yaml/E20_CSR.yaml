@@ -1,0 +1,109 @@
+# The following four CSRs are implemented:
+# 1) MIE
+# 2) MSCRATCH
+# 3) minstreth
+# 4) mcycleh
+
+# TODO: Rest of the CSRs are pending for implementation 
+
+# MIE
+- csr: mie
+  description: >
+    Contains interrupt information
+  address: 0x304
+  privilege_mode: M
+  rv32:
+    - field_name: reserved
+      description: >
+        M-mode software interrupts enable
+      type: WPRI
+      reset_val: 0
+      msb: 2
+      lsb: 0
+    - field_name: msie
+      description: >
+        M-mode software interrupts enable
+      type: RW
+      reset_val: 0
+      msb: 3
+      lsb: 3
+    - field_name: reserved
+      description: >
+        M-mode software interrupts enable
+      type: WPRI
+      reset_val: 0
+      msb: 6
+      lsb: 4
+    - field_name: mtie
+      description: >
+        M-mode timer interrupt enable
+      type: RW
+      reset_val: 0
+      msb: 7
+      lsb: 7
+    - field_name: msie
+      description: >
+        M-mode software interrupts enable
+      type: WPRI
+      reset_val: 0
+      msb: 10
+      lsb: 8
+    - field_name: meie
+      description: >
+        M-mode external interrupts enable 
+      type: WARL
+      reset_val: 0
+      msb: 11
+      lsb: 11
+    - field_name: mitie1
+      description: >
+        internal timer 1 local interrupt enable
+      type: WPRI
+      reset_val: 0
+      msb: 31
+      lsb: 12
+
+# MSCRATCH
+- csr: mscratch
+  description: >
+    M-mode scratch register
+  address: 0x340
+  privilege_mode: M
+  rv32:
+    - field_name: mscratch
+      description: >
+        scratch register
+      type: WARL
+      reset_val: 0
+      msb: 31
+      lsb: 0
+
+# mcycleh
+- csr: mcycleh
+  description: >
+    Debug PC Register
+  address: 0xB80
+  privilege_mode: M
+  rv32:
+    - field_name: mcycleh
+      description: >
+        Upper word of mcycle
+      type: WARL
+      reset_val: 0
+      msb: 31
+      lsb: 0
+
+# minstreth
+- csr: minstreth
+  description: >
+    Debug PC Register
+  address: 0xB82
+  privilege_mode: M
+  rv32:
+    - field_name: mcycleh
+      description: >
+        Upper word of minstret
+      type: WARL
+      reset_val: 0
+      msb: 31
+      lsb: 0

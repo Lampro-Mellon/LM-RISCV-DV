@@ -1,0 +1,78 @@
+# Copyright Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http:#www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- tool: vcs
+  compile:
+    cmd:
+      - "vcs -full64 -LDFLAGS '-Wl,--no-as-needed'
+         -assert svaext -sverilog +error+500 <cov_opts>
+         -notice  
+         -line  
+         -error=PCWM-L  
+         -timescale=1ns/10ps  
+         -quiet  
+         +rad  
+         +v2k  
+         +vcs+lic+wait  
+         +vc+list
+         -F rtl/design.F
+         -F rtl/memories.F
+         -F tracer_files.F  
+         -F top.F  
+         +define+RANDOM=\"1'b0\"  
+         +define+RANDOMIZE_MEM_INIT  
+         +define+RANDOMIZE_REG_INIT  
+         +define+RANDOMIZE_GARBAGE_ASSIGN  
+         +define+RANDOMIZE_INVALID_ASSIGN  
+         +define+RANDOMIZE_DELAY=2  
+         +define+PRINTF_COND=TestDriver.printf_cond  
+         +define+STOP_COND=!TestDriver.reset  
+         +define+MODEL=CoreIPSubsystemAllPortRAMTestHarness  
+         +define+INDICATOR=SiFive_TLTestIndicator  
+         +libext+.v  
+         -debug_access+pp  
+         -assert disable_cover  
+         -Mdir=<out>/vcs_simv.csrc
+         -o <out>/vcs_simv
+         -l <out>/compile.log
+         -lca -kdb <cmp_opts> <wave_opts>"
+    wave_opts: >
+      -debug_access+all -ucli -do waves.tcl
+    cov_opts: >
+      -cm line+tgl+branch
+      -cm_hier cover.cfg
+      -cm_dir <out>/test.vdb
+      
+  sim:
+    cmd: >
+      env SIM_DIR=<sim_dir>
+        <out>/vcs_simv 
+        <wave_opts> <cov_opts>
+        -error=STASKW_CO1
+        -error=STASKW_RMCOF
+        -error=STASKW_RMIEAFL
+        +disable_ahb_fuzzing=1
+        +disable_axi4_shuffling=1
+        +max-cycles=20000000
+        +verbose
+        +testfile=program.hex
+        +tracer_file_base=<sim_dir>/raw_trace_core
+        +tracer_file_base_rf_wrenx=<sim_dir>/trace_core_rf_wrenx
+        -l <sim_dir>/sim.log
+    wave_opts: >
+      -ucli -do <cwd>/waves.tcl
+    cov_opts: >
+      -cm line+tgl+branch
+      -cm_name test_<test_name>_<iteration>
+      -cm_dir <out>/test.vdb
