@@ -22,6 +22,7 @@ import os
 import random
 import subprocess
 import sys
+from pathlib import Path
 
 _CORE = os.path.normpath(os.path.join(os.path.dirname(__file__)))
 _RISCV_DV_ROOT = os.path.join(_CORE, '../../google_riscv_dv')
@@ -222,7 +223,6 @@ def rtl_compile(compile_cmds, output_dir, lsf_cmd, opts):
             cmd = lsf_cmd + ' ' + cmd
 
         logging.debug("Compile command: %s" % cmd)
-
         # Note that we don't use run_parallel_cmd here: the commands in
         # compile_cmds need to be run serially.
         run_cmd(cmd)
@@ -288,7 +288,7 @@ def cp_compiled_test(test, bin_dir, idx):
 	bin_dir		: general path to binary directory
 	idx 		: iteration number of the test'''
 	
-	test_name = test['test']
+	test_name = test['test']          
 	if "c_tests" in test.keys():
 		bin_dir		= bin_dir.replace("asm_tests", "directed_c_tests")
 		binary 		= os.path.join(bin_dir, '{}.bin'.format(test_name))
@@ -311,7 +311,6 @@ def cp_compiled_test(test, bin_dir, idx):
 	os.system(cp_binary_cmd)
 	cp_program_hex_cmd 	= "cp %s %s/program.hex" % (program_hex, _CORE)
 	os.system(cp_program_hex_cmd)
-
 
 def run_sim_commands(command_list, test, bin_dir, use_lsf):
     '''Run the given list of commands
@@ -380,7 +379,6 @@ def rtl_sim(sim_cmd, test_list, seed_gen, opts,
                          })
     # Compute a list of pairs (cmd, dirname) where cmd is the command to run
     # and dirname is the directory in which the command should be run.
-    
     # cmd_list = []
     for test in test_list:
         for i in range(test['iterations']):
@@ -665,7 +663,6 @@ def main():
         'compare': args.steps == "all" or 'compare' in args.steps,
         'cov': args.steps == "all" or 'cov' in args.steps
     }
-
     compile_cmds = []
     sim_cmd = ""
     matched_list = []

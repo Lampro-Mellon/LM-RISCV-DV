@@ -44,3 +44,20 @@
       -cm line+tgl+branch
       -cm_name test_<test_name>_<iteration>
       -cm_dir <out>/test.vdb
+
+- tool: verilator
+  compile:
+    cmd:
+      - "verilator --cc -CFLAGS \"-std=c++11\"
+         -Wno-UNOPTFLAT -I/testbench
+         -f flist_verilator.f --top-module tb_top -exe test_tb_top.cpp --autoflush --trace
+         -f testbench_veri.f"
+      - "cp ./testbench/test_tb_top.cpp obj_dir"
+      - "make -C obj_dir -f Vtb_top.mk OPT_FAST=\"-O2\""
+  sim:
+    cmd: >
+        ./obj_dir/Vtb_top +dumpon >><sim_dir>/sim.log
+        env SIM_DIR=<sim_dir>
+          <sim_opts> 
+          +tracer_file_base=<sim_dir>/trace_core
+          -l <sim_dir>/sim.log

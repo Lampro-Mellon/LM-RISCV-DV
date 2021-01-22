@@ -847,11 +847,15 @@ int i=0;
 				    end
 				  end
 				  INSN_CLW: begin
+            /* verilator lint_off WIDTH */
             rvfi_rs2_addr = 8 + rvfi_insn[4:2];
+            /* verilator lint_on WIDTH */
             decode_compressed_load_insn("c.lw");
           end
           INSN_CSW: begin
+            /* verilator lint_off WIDTH */
             rvfi_rs2_addr = 8 + rvfi_insn[4:2];
+            /* verilator lint_on WIDTH */
             decode_compressed_store_insn("c.sw");
           end
           // C1 Opcodes
@@ -871,19 +875,27 @@ int i=0;
 				  INSN_CSRAI:      decode_cb_sr_insn("c.srai");
 				  INSN_CANDI:      decode_cb_insn("c.andi");
 				  INSN_CSUB: begin
+            /* verilator lint_off WIDTH */
             rvfi_rs2_addr = 8 + rvfi_insn[4:2];
+            /* verilator lint_on WIDTH */
             decode_cs_insn("c.sub");
           end
 				  INSN_CXOR: begin
+            /* verilator lint_off WIDTH */
             rvfi_rs2_addr = 8 + rvfi_insn[4:2];
+            /* verilator lint_on WIDTH */
             decode_cs_insn("c.xor");
           end
           INSN_COR: begin
+            /* verilator lint_off WIDTH */
             rvfi_rs2_addr = 8 + rvfi_insn[4:2];
+            /* verilator lint_on WIDTH */
             decode_cs_insn("c.or");
           end
           INSN_CAND: begin
+            /* verilator lint_off WIDTH */
             rvfi_rs2_addr = 8 + rvfi_insn[4:2];
+            /* verilator lint_on WIDTH */
             decode_cs_insn("c.and");
           end
 				  INSN_CBEQZ:      decode_cb_insn("c.beqz");
