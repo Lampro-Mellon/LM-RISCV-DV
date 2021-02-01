@@ -1,0 +1,4 @@
+[debug] [shaheen-test] Classpath dependencies List()
+[debug] [shaheen-test] Dependencies from configurations List(shaheen)
+[debug] Bloop wrote the configuration of project 'shaheen-test' to '/Users/mbp/Desktop/merl/Shaheen/.bloop/shaheen-test.json'
+[success] Generated .bloop/shaheen-test.json

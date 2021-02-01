@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ScalaCompilerConfiguration">
+    <profile name="sbt 1" modules="ibtida_9463" />
+    <profile name="sbt 2" modules="Shaheen">
+      <parameters>
+        <parameter value="-Xsource:2.11" />
+      </parameters>
+      <plugins>
+        <plugin path="$USER_HOME$/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scalamacros/paradise_2.12.10/2.1.0/paradise_2.12.10-2.1.0.jar" />
+      </plugins>
+    </profile>
+  </component>
+</project>

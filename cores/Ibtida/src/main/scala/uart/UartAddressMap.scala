@@ -1,0 +1,15 @@
+package uart
+import chisel3._
+
+object UartAddressMap {
+  val UART_INTR_STATE_OFFSET = 0.U
+  val UART_INTR_ENABLE_OFFSET = 4.U
+  val UART_INTR_TEST_OFFSET = 8.U
+  val UART_CTRL_OFFSET = 12.U
+  val UART_STATUS_OFFSET = 16.U
+  val UART_RDATA_OFFSET = 20.U
+  val UART_WDATA_OFFSET = 24.U
+  val UART_FIFO_CTRL_OFFSET = 28.U
+  val UART_FIFO_STATUS_OFFSET = 32.U
+  val UART_OVRD_OFFSET = 36.U
+}
