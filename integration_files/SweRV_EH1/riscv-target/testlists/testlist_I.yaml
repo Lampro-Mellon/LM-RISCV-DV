@@ -1,0 +1,225 @@
+# Copyright Google LLC
+# Copyright 2020 Lampro Mellon
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# ================================================================================
+#                  Regression test list format
+# --------------------------------------------------------------------------------
+# test            : Assembly test name
+# description     : Description of this test
+# gen_opts        : Instruction generator options
+# iterations      : Number of iterations of this test
+# no_iss          : Enable/disable ISS simulator (Optional)
+# gen_test        : Test name used by the instruction generator
+# asm_tests       : Path to directed, hand-coded assembly test file or directory
+# c_tests         : Path to directed, hand-coded C test file or directory
+# rtl_test        : RTL simulation test name
+# cmp_opts        : Compile options passed to the instruction generator
+# sim_opts        : Simulation options passed to the instruction generator
+# no_post_compare : Enable/disable comparison of trace log and ISS log (Optional)
+# compare_opts    : Options for the RTL & ISS trace comparison
+# gcc_opts        : gcc compile options
+# --------------------------------------------------------------------------------
+
+- test: add-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/add-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: addi-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/addi-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: and-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/and-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+  
+- test: andi-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/andi-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: auipc-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/auipc-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: beq-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/beq-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: bge-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/bge-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: bgeu-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/bgeu-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: blt-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/blt-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: bltu-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/bltu-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: bne-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/bne-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: fence-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/fence-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+# - test: jal-01
+#   asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/jal-01.S
+#   iterations: 1
+#   rtl_test: core_compliance_test
+
+- test: jalr-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/jalr-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: lb-align-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/lb-align-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: lbu-align-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/lbu-align-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: lh-align-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/lh-align-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: lhu-align-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/lhu-align-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: lui-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/lui-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+ 
+- test: lw-align-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/lw-align-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: or-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/or-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: ori-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/ori-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: sb-align-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/sb-align-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: sh-align-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/sh-align-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: sll-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/sll-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: slli-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/slli-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: slt-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/slt-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: slti-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/slti-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: sltiu-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/sltiu-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: sltu-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/sltu-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: sra-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/sra-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: srai-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/srai-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: srl-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/srl-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: srli-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/srli-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: sub-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/sub-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: sw-align-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/sw-align-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: xor-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/xor-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: xori-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/xori-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+ 
+ 
