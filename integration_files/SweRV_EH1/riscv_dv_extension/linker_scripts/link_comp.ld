@@ -11,7 +11,7 @@ SECTIONS
   .text : { *(.text) }
   . = ALIGN(0x1000);
   /*  . = 0x80000;*/
-  . = 0x80030000;
+  . = 0x800e0000;
   .data : { *(.data) }
   .data.string : { *(.data.string)}
   .bss : { *(.bss) }
