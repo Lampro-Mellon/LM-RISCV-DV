@@ -133,4 +133,3 @@ cp -r "${RC_LOCAL}/riscv-test-env" "${INTEGRATED_CORES}/SweRV_EH1/snapshots/defa
 cp "${RC_LOCAL}/riscv-test-env/arch_test.h" "${INTEGRATED_CORES}/SweRV_EH1/snapshots/default/";
 cp "${RC_LOCAL}/riscv-test-env/encoding.h" "${INTEGRATED_CORES}/SweRV_EH1/snapshots/default/";
 cp -r "${INTEGRATION_FILES}/SweRV_EH1/riscv-target/model_test.h" "${INTEGRATED_CORES}/SweRV_EH1/snapshots/default/";
-cp -r "${INTEGRATION_FILES}/SweRV_EH1/riscv-target/testlists/" "${INTEGRATED_CORES}/SweRV_EH1/riscv_dv_extension/";
