@@ -1,0 +1,73 @@
+# Copyright Google LLC
+# Copyright 2020 Lampro Mellon
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# ================================================================================
+#                  Regression test list format
+# --------------------------------------------------------------------------------
+# test            : Assembly test name
+# description     : Description of this test
+# gen_opts        : Instruction generator options
+# iterations      : Number of iterations of this test
+# no_iss          : Enable/disable ISS simulator (Optional)
+# gen_test        : Test name used by the instruction generator
+# asm_tests       : Path to directed, hand-coded assembly test file or directory
+# c_tests         : Path to directed, hand-coded C test file or directory
+# rtl_test        : RTL simulation test name
+# cmp_opts        : Compile options passed to the instruction generator
+# sim_opts        : Simulation options passed to the instruction generator
+# no_post_compare : Enable/disable comparison of trace log and ISS log (Optional)
+# compare_opts    : Options for the RTL & ISS trace comparison
+# gcc_opts        : gcc compile options
+# --------------------------------------------------------------------------------
+
+- test: div-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/M/src/div-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: divu-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/M/src/divu-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: mul-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/M/src/mul-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: mulh-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/M/src/mulh-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: mulhsu-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/M/src/mulhsu-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: mulhu-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/M/src/mulhu-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: rem-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/M/src/rem-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
+
+- test: remu-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/M/src/remu-01.S
+  iterations: 1
+  rtl_test: core_compliance_test

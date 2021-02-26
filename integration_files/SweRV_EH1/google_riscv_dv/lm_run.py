@@ -477,7 +477,8 @@ def run_assembly(asm_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
   run_cmd_output(cmd.split(), debug_cmd = debug_cmd)
   
   # Generating disassembly dump
-  cmd = ('%s --disassemble-all --disassemble-zeroes -M no-aliases --section=.text --section=.data %s > %s' % (get_env_var("RISCV_OBJDUMP", debug_cmd = debug_cmd), elf, dump))
+  #cmd = ('%s --disassemble-all --disassemble-zeroes -M no-aliases --section=.text --section=.data %s > %s' % (get_env_var("RISCV_OBJDUMP", debug_cmd = debug_cmd), elf, dump))
+  cmd = ('%s --disassemble-all --disassemble-zeroes -M no-aliases %s > %s' % (get_env_var("RISCV_OBJDUMP", debug_cmd = debug_cmd), elf, dump))
   os.system(cmd)
     
   # Generating Program.hex
