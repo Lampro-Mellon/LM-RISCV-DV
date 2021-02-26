@@ -92,10 +92,10 @@
   iterations: 1
   rtl_test: core_compliance_test
 
-# - test: jal-01
-#   asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/jal-01.S
-#   iterations: 1
-#   rtl_test: core_compliance_test
+- test: jal-01
+  asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/jal-01.S
+  iterations: 1
+  rtl_test: core_compliance_test
 
 - test: jalr-01
   asm_tests: directed_tests/riscv-test-suite/rv32i_m/I/src/jalr-01.S
