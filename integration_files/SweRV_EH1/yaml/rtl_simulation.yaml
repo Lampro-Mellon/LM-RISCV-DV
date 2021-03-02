@@ -62,7 +62,3 @@
           +tracer_file_base=<sim_dir>/trace_core
           -l <sim_dir>/sim.log
 
-- tool: pyflow
-  sim:
-    cmd: >
-      python3 <cwd>/pygen/pygen_src/test/<test_name>.py

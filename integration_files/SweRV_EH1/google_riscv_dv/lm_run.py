@@ -1014,6 +1014,9 @@ def load_config(args, cwd):
     if not args.simulator_yaml:
         args.simulator_yaml = cwd + "/yaml/simulator.yaml"
 
+    if args.simulator == "pyflow":
+        args.sim_opts = ""
+
     # Keep the core_setting_dir option to be backward compatible, suggest to use
     # --custom_target
     if args.core_setting_dir:
