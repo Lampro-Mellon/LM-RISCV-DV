@@ -61,4 +61,3 @@
           <sim_opts> 
           +tracer_file_base=<sim_dir>/trace_core
           -l <sim_dir>/sim.log
-
