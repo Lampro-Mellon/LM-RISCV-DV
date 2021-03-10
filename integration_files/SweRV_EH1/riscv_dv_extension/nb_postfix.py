@@ -14,34 +14,6 @@
 #    limitations under the License.
 # //////////////////////////////////////////////////////////////////////
 
-# import os
-# import sys
-# import argparse
-# import re
-# import sys
-
-# _CORE_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__),
-#                                            '../'))
-# _DV_SCRIPTS = os.path.join(_CORE_ROOT, '../../../google_riscv_dv/scripts')
-# _OLD_SYS_PATH = sys.path
-
-# # Import riscv_trace_csv and lib from _DV_SCRIPTS before putting sys.path back
-# # as it started.
-# try:
-#     sys.path.insert(0, _DV_SCRIPTS)
-
-#     from riscv_trace_csv import (RiscvInstructionTraceCsv,
-#                                 RiscvInstructionTraceEntry,
-#                                  get_imm_hex_val)
-#     #from lib import RET_FATAL, gpr_to_abi, sint_to_hex
-#     import logging
-
-# finally:
-#     sys.path = _OLD_SYS_PATH
-
-# nb_log = open('trace_core_nb_load.log')  
-# rtl_log = open('trace_core_00000000.log')
-# rtl_log_f = open('trace_core.log')
 
 def nb_post_fix(rtl_log_f,rtl_log,nb_log):
     ''' Replaces non-blocking load results in rd of trace log.
@@ -49,11 +21,9 @@ def nb_post_fix(rtl_log_f,rtl_log,nb_log):
     checks from that time/CycleCnt backwards, where this gpr was written in trace log,
     replaces the result in rd (also load) at that instruction'''
     
-    #nb_file = open('trace_core_nb_load.log',"r")
     nb_file = open(nb_log,"r")
     load_lines = nb_file.readlines()
     #read whole file
-    #trace_file = open('trace_core_00000000.log',"r")
     trace_file = open(rtl_log,"r")
     trace_lines = trace_file.readlines()
     list1 = []
@@ -89,7 +59,6 @@ def nb_post_fix(rtl_log_f,rtl_log,nb_log):
                 if(list1[x][2]==list2[a][5].split(',')[0] and (list2[a][10].split(':')[0]=="load") and (list2[a][4] in list3)):
                     list2[a][7]=("%s=0x%s" %(list1[x][2],list1[x][3]))
                     list2[a][10]=("load:0x%s" %(list1[x][3]))
-                    #print(str('\t'.join(list2[a])))
                     i=a+1    
                     break
             x+=1
@@ -99,8 +68,7 @@ def nb_post_fix(rtl_log_f,rtl_log,nb_log):
     for i in range(len(trace_lines)):
         list2[i]='\t'.join(list2[i])
         trace_lines[i]=str(list2[i]+'\n')
-    #writing back lines        
-    #nb_file = open('trace_core.log',"w")
+    #writing back lines
     nb_file = open(rtl_log_f, "w")
     nb_file.writelines(trace_lines)
 
@@ -128,3 +96,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
