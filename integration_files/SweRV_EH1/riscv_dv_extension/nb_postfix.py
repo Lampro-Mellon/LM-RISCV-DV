@@ -20,6 +20,7 @@ def nb_post_fix(rtl_log_f,rtl_log,nb_log):
     Sees time/CycleCnt at which non-block load is written back to gpr,
     checks from that time/CycleCnt backwards, where this gpr was written in trace log,
     replaces the result in rd (also load) at that instruction'''
+    
     nb_file = open(nb_log,"r")
     load_lines = nb_file.readlines()
     #read whole file
@@ -27,7 +28,9 @@ def nb_post_fix(rtl_log_f,rtl_log,nb_log):
     trace_lines = trace_file.readlines()
     list1 = []
     list2 = []
+    list3 = ['lb', 'lh', 'lw', 'lbu', 'lhu', 'c.lw', 'c.lwsp', 'c.ld', 'c.ldsp', 'c.lq', 'c.lqsp']
     x = 1
+    i = 1
     
     for i in range(len(load_lines)):
         l= load_lines[i].split()
@@ -53,10 +56,9 @@ def nb_post_fix(rtl_log_f,rtl_log,nb_log):
                     t = list2[a][10].split(':')
                 except IndexError:
                     continue
-                if(list1[x][2]==list2[a][5].split(',')[0] and (list2[a][10].split(':')[0]=="load") ):
+                if(list1[x][2]==list2[a][5].split(',')[0] and (list2[a][10].split(':')[0]=="load") and (list2[a][4] in list3)):
                     list2[a][7]=("%s=0x%s" %(list1[x][2],list1[x][3]))
                     list2[a][10]=("load:0x%s" %(list1[x][3]))
-                    #print(str('\t'.join(list2[a])))
                     i=a+1    
                     break
             x+=1
@@ -66,8 +68,8 @@ def nb_post_fix(rtl_log_f,rtl_log,nb_log):
     for i in range(len(trace_lines)):
         list2[i]='\t'.join(list2[i])
         trace_lines[i]=str(list2[i]+'\n')
-    #writing back lines        
-    nb_file = open(rtl_log_f,"w")
+    #writing back lines
+    nb_file = open(rtl_log_f, "w")
     nb_file.writelines(trace_lines)
 
 def main():
@@ -94,3 +96,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
