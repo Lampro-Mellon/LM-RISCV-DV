@@ -54,7 +54,7 @@ ITERATIONS          := 0
 # LSF CMD
 LSF_CMD             :=
 # Generator timeout limit in seconds
-TIMEOUT             := 10000
+TIMEOUT             := 1000
 # Privileged CSR YAML description file
 CSR_FILE            := yaml/SweRV_CSR.yaml
 # Pass/fail signature address at the end of test
