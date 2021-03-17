@@ -1,5 +1,6 @@
 /cores/**
 /google_riscv_dv/**
+/riscv-compliance/**
 /integrated_cores/**
 **.vscode
 **.log

@@ -66,7 +66,7 @@
   description: >
     Arithmetic instruction test, no load/store/branch instructions
   gen_opts: >
-    +instr_cnt=5000
+    +instr_cnt=2000
     +num_of_sub_program=0
     +directed_instr_0=riscv_int_numeric_corner_stream,4
     +no_fence=1
