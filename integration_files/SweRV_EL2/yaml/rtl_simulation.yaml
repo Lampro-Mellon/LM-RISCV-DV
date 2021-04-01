@@ -1,0 +1,64 @@
+# Copyright Google LLC
+# Copyright 2020 Lampro Mellon
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http:#www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- tool: vcs
+  compile:
+    cmd:
+      - "vcs -full64 -LDFLAGS '-Wl,--no-as-needed'
+         -assert svaext -sverilog +error+500 <cov_opts>
+         -timescale=1ns/10ps
+         -f SweRV_EL2_flist.f
+         -Mdir=<out>/vcs_simv.csrc
+         -o <out>/vcs_simv
+         -l <out>/compile.log
+         -lca -kdb <cmp_opts> <wave_opts>"
+    wave_opts: >
+      -debug_access+all -ucli -do waves.tcl
+    cov_opts: >
+      -cm line+tgl+branch
+      -cm_hier cover.cfg
+      -cm_dir <out>/test.vdb
+      
+  sim:
+    cmd: >
+      env SIM_DIR=<sim_dir>
+        <out>/vcs_simv +vcs+lic+wait
+        <sim_opts> <wave_opts> <cov_opts>
+        +tracer_file_base=<sim_dir>/trace_core
+        +tracer_file_base_log=<sim_dir>/trace
+        -l <sim_dir>/sim.log
+    wave_opts: >
+      -ucli -do <cwd>/waves.tcl
+    cov_opts: >
+      -cm line+tgl+branch
+      -cm_name test_<test_name>_<iteration>
+      -cm_dir <out>/test.vdb
+
+- tool: verilator
+  compile:
+    cmd:
+      - "verilator --cc -CFLAGS \"-std=c++11\"
+         -Wno-UNOPTFLAT -I/testbench
+         -f flist_verilator.f --top-module tb_top -exe test_tb_top.cpp --autoflush --trace
+         -f testbench_veri.f"
+      - "cp ./testbench/test_tb_top.cpp obj_dir"
+      - "make -C obj_dir -f Vtb_top.mk OPT_FAST=\"-O2\""
+  sim:
+    cmd: >
+        ./obj_dir/Vtb_top +dumpon >><sim_dir>/sim.log
+        env SIM_DIR=<sim_dir>
+          <sim_opts> 
+          +tracer_file_base=<sim_dir>/trace_core
+          -l <sim_dir>/sim.log
