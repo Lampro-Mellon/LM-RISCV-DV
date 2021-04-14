@@ -1,5 +1,5 @@
 # Extraction of Functional Coverage 
-RISC-V DV has a feature for functional coverage extraction from the csv data taken from log files. Data can be taken from ISS trace log or core trace log. This coverage information basically conveys information regarding the degree of randomization in tests. Covergroups are defined in riscv_instr_covergroup.sv. Custom covergroups can be added, however, it should be noted that this coverage is extracted from trace log data only.
+RISC-V DV has a feature for functional coverage extraction from the csv data taken from log files. Data can be taken from ISS trace log or core trace log. This coverage information basically conveys information regarding the degree of randomization in tests. Covergroups are defined in riscv_instr_cover_group.sv. Custom covergroups can be added, however, it should be noted that this coverage is extracted from trace log data only.
 
 ## Covergroups Information
 - Cover all operands for each instruction
